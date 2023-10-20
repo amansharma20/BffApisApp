@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createCustomerBasket } from './CreateBasketApiAsyncThunk';
+
 const initialState = {
   customerBasket: [],
   status: 'idle',

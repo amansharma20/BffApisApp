@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, Text, theme } from '@atoms';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import LoginScreen from '../auth/LoginScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
-import config, { ENV } from '@/config';
+import config from '@/config';
 import CommonSearchHeader from '@/components/CommonSearchHeader/CommonSearchHeader';
 
 export default function ProfileScreen() {

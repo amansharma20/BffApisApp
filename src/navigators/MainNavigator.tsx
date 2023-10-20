@@ -5,11 +5,11 @@ import jwt_decode from 'jwt-decode';
 import * as Keychain from 'react-native-keychain';
 import { Alert } from 'react-native';
 import RNRestart from 'react-native-restart';
-import { reduxStorage } from '@/store';
+import { reduxStorage, storage } from '@/store';
 import { useDispatch } from 'react-redux';
 import SplashScreen from '@/components/SplashScreen/SplashScreen';
-import AuthNavigator from './AuthNavigator';
 import HomeStackNavigator from './HomeStackNavigator';
+
 const Stack = createStackNavigator();
 
 export const AuthContext = React.createContext({});
@@ -103,12 +103,13 @@ const MainNavigator = () => {
             [
               {
                 text: 'Ok',
-                onPress: () => {},
+                onPress: () => {
+                  authContext.signOut();
+                },
                 style: 'destructive',
               },
             ],
           );
-          authContext.signOut();
         }
       }
     };

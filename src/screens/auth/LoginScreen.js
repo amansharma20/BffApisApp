@@ -10,16 +10,12 @@ import {
 } from 'react-native';
 import { commonApi } from '@/api/CommanAPI';
 import { AuthContext } from '@/navigators/MainNavigator';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import CommonSolidButton from '../../components/CommonSolidButton/CommonSolidButton';
 import SelectAuthMethod from './components/SelectAuthMethod';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { useDispatch } from 'react-redux';
-import { getCustomerDetails } from '@/redux/profileApi/ProfileApiAsyncThunk';
 import SignUpScreen from './SignUpScreen';
 import { reduxStorage } from '@/store';
-import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
 import { createCustomerBasket } from '@/redux/createBasketApi/CreateBasketApiAsyncThunk';
 import config from '@/config';
 
@@ -45,8 +41,6 @@ export default function LoginScreen(props) {
 
     if (response.data?.status === 201) {
       console.log('HERE');
-      dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
-      dispatch(createCustomerBasket(`${config.createCartUrl}`));
       // await AsyncStorage.setItem(
       //   'tokenExpiry',
       //   response?.data?.data?.validation?.authCookie?.Value,
@@ -54,28 +48,10 @@ export default function LoginScreen(props) {
       // var token = response?.data?.data?.validation?.authCookie?.Value;
       var token = response?.data?.data?.bearerToken;
       const customerId = response?.data?.data?.customer_id;
-      console.log('customerId: ', response?.data?.data?.customer_id);
       reduxStorage.setItem('customerId', customerId);
+      // dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
+      dispatch(createCustomerBasket(`${config.createCartUrl}`));
       signIn(token);
-      // Toast.show({
-      //   type: 'success',
-      //   text1: `Welcome ${response?.data?.data?.first_name || 'User'}!`,
-      //   text2: 'You are now logged in. 🎉',
-      //   position: 'top',
-      // });
-      // CommonLoading.hide();
-      // dispatch(getCustomerDetails('user-details/tarundrupal@yopmail.com')).then(
-      //   res => {
-      //     Toast.show({
-      //       type: 'success',
-      //       text1: `Welcome ${res?.payload?.data?.userProfile?.email || ''}!`,
-      //       text2: 'You are now logged in. 🎉',
-      //       position: 'top',
-      //     });
-      //     navigation.navigate('PersonalDetailsScreen');
-      //     setIsLoading(false);
-      //   },
-      // );
     } else {
       Alert.alert('server error');
       setIsLoading(false);

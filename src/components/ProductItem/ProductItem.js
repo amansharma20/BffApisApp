@@ -57,7 +57,8 @@ const ProductItem = React.memo(({ item }) => {
               $
               {item?.basePrice ||
                 item?.product_price?.listPrice ||
-                item?.productPrice?.DEFAULT}
+                item?.productPrice?.DEFAULT ||
+                item?.product_price?.sellingPrice}
             </Text>
           </Box>
         </Box>

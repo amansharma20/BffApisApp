@@ -12,7 +12,6 @@ import CollectionsScreen from '@/screens/collection/CollectionsScreen';
 import CheckoutScreen from '@/screens/checkout/CheckoutScreen';
 import OrderScreen from '@/screens/orders/OrdersScreen';
 import OrderDetailsScreen from '@/screens/orders/OrderDetailsScreen';
-import ViewAddress from '@/screens/address/components/ViewAddress';
 import AddAddress from '@/screens/address/components/AddAddress';
 import AddressScreen from '@/screens/address/AddressScreen';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
@@ -29,13 +28,6 @@ const HomeStackNavigator = () => {
       }}
     >
       <Stack.Screen name="HomeScreen" component={BottomTabNavigator} />
-      {isUserLoggedIn === false ? (
-        <>
-          <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        </>
-      ) : (
-        <></>
-      )}
       <Stack.Screen name="ProductsByCategory" component={ProductsByCategory} />
       <Stack.Screen
         name="ProductDetailsScreen"
@@ -51,9 +43,15 @@ const HomeStackNavigator = () => {
       <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
       <Stack.Screen name="OrdersScreen" component={OrderScreen} />
       <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} />
-      <Stack.Screen name="ViewAddress" component={ViewAddress} />
       <Stack.Screen name="AddAddress" component={AddAddress} />
       <Stack.Screen name="AddressScreen" component={AddressScreen} />
+      {isUserLoggedIn === false ? (
+        <>
+          <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        </>
+      ) : (
+        <></>
+      )}
     </Stack.Navigator>
   );
 };

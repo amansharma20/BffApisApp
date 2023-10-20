@@ -12,8 +12,8 @@ import {
   REGISTER,
   Storage,
 } from 'redux-persist';
+import { ThunkDispatch } from 'redux-thunk';
 import { MMKV } from 'react-native-mmkv';
-
 import { api } from '../services/api';
 import theme from './theme';
 import getProductsByCategoryApiSlice from '../redux/productsApi/ProductsApiSlice';
@@ -95,3 +95,7 @@ const persistor = persistStore(store);
 setupListeners(store.dispatch);
 
 export { store, persistor };
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+// export type ThunkDispatch = typeof store.dispatch;

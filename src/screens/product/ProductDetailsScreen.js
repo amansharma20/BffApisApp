@@ -237,6 +237,7 @@ const ProductDetailsScreen = props => {
                                 flexBasis: 1,
                                 justifyContent: 'space-between',
                                 paddingHorizontal: 4,
+                                flexWrap: 'wrap',
                               }}
                               // numColumns={3}
                             />

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import React, { useState } from 'react';
 import { getCustomerDetails } from '@/redux/profileApi/ProfileApiAsyncThunk';
 import { ActivityIndicator } from 'react-native';
+
 const ViewAddress = ({ userAddress }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -26,6 +27,7 @@ const ViewAddress = ({ userAddress }) => {
       );
     }
   };
+
   return (
     <Box
       borderRadius={8}

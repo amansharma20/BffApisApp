@@ -62,14 +62,14 @@ const CheckoutScreen = props => {
     const reqBody = {
       address1: 'Ocapi',
       address2: 'Demo',
-      city: ADDRESSES_DATA[selectedAddressIndex]?.city,
-      first_name: ADDRESSES_DATA[selectedAddressIndex]?.firstName,
+      city: ADDRESSES_DATA?.[selectedAddressIndex]?.city,
+      first_name: ADDRESSES_DATA?.[selectedAddressIndex]?.firstName,
       full_name:
-        ADDRESSES_DATA[selectedAddressIndex]?.firstName +
-        ADDRESSES_DATA[selectedAddressIndex]?.lastName,
-      id: ADDRESSES_DATA[selectedAddressIndex]?.addressNumber,
-      last_name: ADDRESSES_DATA[selectedAddressIndex]?.lastName,
-      phone: ADDRESSES_DATA[selectedAddressIndex]?.phone,
+        ADDRESSES_DATA?.[selectedAddressIndex]?.firstName +
+        ADDRESSES_DATA?.[selectedAddressIndex]?.lastName,
+      id: ADDRESSES_DATA?.[selectedAddressIndex]?.addressNumber,
+      last_name: ADDRESSES_DATA?.[selectedAddressIndex]?.lastName,
+      phone: ADDRESSES_DATA?.[selectedAddressIndex]?.phone,
       postal_code: '45200',
       state_code: '45200',
       title: 'OcapiDemo',

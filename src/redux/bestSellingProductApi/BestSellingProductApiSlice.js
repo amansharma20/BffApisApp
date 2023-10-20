@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getBestSellings } from './BestSellingProductApiAsyncThunk';
+
 const initialState = {
   bestSellings: [],
   status: 'idle',
@@ -22,4 +23,5 @@ const getBestSellingsApiSlice = createSlice({
     });
   },
 });
+
 export default getBestSellingsApiSlice.reducer;

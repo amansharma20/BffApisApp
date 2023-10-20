@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getNewArrival } from './NewArrivalApiAsyncThunk';
+
 const initialState = {
   newArrivals: [],
   status: 'idle',

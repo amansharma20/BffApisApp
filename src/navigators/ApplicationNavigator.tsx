@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { SafeAreaView, StatusBar } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -8,16 +7,11 @@ import {
 import { useTheme } from '../hooks';
 import MainNavigator from './MainNavigator';
 import { useFlipper } from '@react-navigation/devtools';
-import { ApplicationStackParamList } from '../../@types/navigation';
 import { ThemeProvider } from '@shopify/restyle';
 import { darkTheme, lightTheme, theme } from '@/atoms';
 
-const Stack = createStackNavigator<ApplicationStackParamList>();
-
-// @refresh reset
 const ApplicationNavigator = () => {
   const { Layout, darkMode, NavigationTheme } = useTheme();
-  const { colors } = NavigationTheme;
 
   const navigationRef = useNavigationContainerRef();
   const routeNameRef = useRef('');

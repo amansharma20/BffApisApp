@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '@/api/SecureAPI';
-export const getCustomerBasketApi = createAsyncThunk(
-  'basketApi',
-  async endpoint => {
+import { api } from '../../api/SecureAPI';
+export const getBestSellings = createAsyncThunk(
+  'bestSellings',
+  async (endpoint: string) => {
     try {
       const response = await api.get(endpoint);
       return response.data;
