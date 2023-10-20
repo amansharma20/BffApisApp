@@ -48,7 +48,7 @@ const HomeScreen = () => {
       dispatch(getCustomerDetails(`${ENV}/user-details/${customerId}`));
     }
     dispatch(createCustomerBasket(config.createCartUrl));
-  }, [isUserLoggedIn, customerId]);
+  }, [isUserLoggedIn]);
 
   const newArrivals = useAppSelector(
     state => state?.getNewArrivalApiSlice?.newArrivals?.data,
