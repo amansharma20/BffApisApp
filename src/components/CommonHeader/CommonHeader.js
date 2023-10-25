@@ -1,5 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-import { SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import { Box, Text, theme } from '@/atoms';
 import GoBackButton from '../GoBackButton/GoBackButton';
@@ -7,6 +12,7 @@ import { CartIcon } from '../../assets/svgs';
 import { useNavigation } from '@react-navigation/native';
 import { FONT } from '@/atoms';
 import { useSelector } from 'react-redux';
+import Icons from '@/assets/constants/Icons';
 
 const CommonHeader = ({
   title,
@@ -16,7 +22,6 @@ const CommonHeader = ({
   ...props
 }) => {
   const navigation = useNavigation();
-
 
   const customerCartItems = useSelector(
     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
@@ -71,7 +76,7 @@ const CommonHeader = ({
               ) : (
                 <></>
               )} */}
-              <CartIcon />
+              <Image source={Icons.cartIcon} style={styles.wishlistIcon} />
             </TouchableOpacity>
           </>
         )}
@@ -103,5 +108,10 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     fontSize: 16,
     fontFamily: FONT.Primary,
+  },
+  wishlistIcon: {
+    resizeMode: 'contain',
+    height: 22,
+    width: 22,
   },
 });

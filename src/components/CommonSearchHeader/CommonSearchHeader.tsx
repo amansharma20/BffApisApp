@@ -42,12 +42,12 @@ const CommonSearchHeader = () => {
         <Box flexDirection="row">
           <TouchableOpacity>
             <Box marginHorizontal="s16">
-              <Image source={Icons.wishlistIcon} style={styles.wishlistIcon} />
+              <Image source={Icons.icon} style={styles.icon} />
             </Box>
           </TouchableOpacity>
           <TouchableOpacity onPress={onPressCart}>
             <Box>
-              <Image source={Icons.cartIcon} style={styles.wishlistIcon} />
+              <Image source={Icons.cartIcon} style={styles.icon} />
             </Box>
           </TouchableOpacity>
         </Box>
@@ -59,7 +59,7 @@ const CommonSearchHeader = () => {
 export default CommonSearchHeader;
 
 const styles = StyleSheet.create({
-  wishlistIcon: {
+  icon: {
     resizeMode: 'contain',
     height: 22,
     width: 22,
