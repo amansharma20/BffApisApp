@@ -1,10 +1,15 @@
+/* eslint-disable react/require-default-props */
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { theme } from '../../atoms';
 import { useNavigation } from '@react-navigation/native';
 import { GoBackIcon } from '../../assets/svgs';
 
-const GoBackButton = ({ onPress }) => {
+interface ButtonProps {
+  onPress?: () => void;
+}
+
+const GoBackButton: React.FC<ButtonProps> = ({ onPress }) => {
   const navigation = useNavigation();
   function goBack() {
     navigation.goBack();
@@ -12,11 +17,8 @@ const GoBackButton = ({ onPress }) => {
 
   return (
     <TouchableOpacity
-      style={{
-        paddingVertical: theme.spacing.backButtonPadding,
-        width: 30,
-      }}
-      onPress={onPress ? onPress : goBack}
+      style={styles.buttonContainer}
+      onPress={onPress || goBack}
     >
       <GoBackIcon />
     </TouchableOpacity>
@@ -25,4 +27,9 @@ const GoBackButton = ({ onPress }) => {
 
 export default GoBackButton;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  buttonContainer: {
+    paddingVertical: theme.spacing.backButtonPadding,
+    width: 30,
+  },
+});

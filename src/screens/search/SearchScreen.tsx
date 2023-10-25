@@ -1,30 +1,28 @@
-import { Box, Text, theme } from '@/atoms';
+/* eslint-disable react/no-unstable-nested-components */
+import { Box, Text } from '@/atoms';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
   ActivityIndicator,
   FlatList,
   SafeAreaView,
-  ScrollView,
   TextInput,
-  Image,
   StyleSheet,
 } from 'react-native';
 import { IS_IOS } from '@/utils/appUtils';
 import GoBackButton from '@/components/GoBackButton/GoBackButton';
-import { commonApi } from '@/api/CommanAPI';
 import ProductItem from '@/components/ProductItem/ProductItem';
 import { searchProducts } from '@/redux/searchApi/SearchApiAsyncThunk';
+import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 
-const SearchScreen = ({ onPress }) => {
+const SearchScreen = () => {
   const [value, setValue] = useState('');
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   //   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [emptyItemFlag, setEmptyItemFlag] = useState(false);
 
-  const products = useSelector(
+  const products = useAppSelector(
     state => state?.searchProductsApiSlice?.products?.data?.ProductData,
   );
 
@@ -37,6 +35,7 @@ const SearchScreen = ({ onPress }) => {
       setIsLoading(false);
     });
   };
+
   const ListEmptyComponent = () => {
     return (
       <Box flex={1} justifyContent="center">
@@ -44,11 +43,13 @@ const SearchScreen = ({ onPress }) => {
       </Box>
     );
   };
+
   const renderItem = ({ item, index }) => (
     <>
       <ProductItem item={item} />
     </>
   );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Box
@@ -57,7 +58,7 @@ const SearchScreen = ({ onPress }) => {
         alignItems="center"
         paddingTop="s8"
       >
-        <GoBackButton onPress={onPress} />
+        <GoBackButton />
         <Box
           borderWidth={IS_IOS ? 0.5 : 1}
           borderColor="black"

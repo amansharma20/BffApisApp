@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import ViewAddress from './components/ViewAddress';
+
 const AddressScreen = () => {
   const navigation = useNavigation();
 
