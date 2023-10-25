@@ -27,6 +27,11 @@ const HomeScreen = () => {
   const [customerId, setCustomerId] = useState(customerIdFromStorage);
   console.log('customerId: ', customerId);
 
+  const customerBasket = useAppSelector(
+    state => state.getCustomerBasketApiSlice?.customerBasket?.data,
+  );
+  console.log('customerBasket: ', customerBasket);
+
   useEffect(() => {
     const listener = storage.addOnValueChangedListener(changedKey => {
       const newValue = storage.getString(changedKey);

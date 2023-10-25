@@ -28,10 +28,11 @@ import createCustomerBasketSlice from '../redux/createBasketApi/CreateBasketApiS
 import getCustomerCartItemsAliSlice from '../redux/cartItemsApi/CartItemsSlice';
 import getOrdersDataApiSlice from '../redux/ordersApi/OrdersApiSlice';
 import getShippmentMethodsApiSlice from '../redux/shippmentMethodApi/ShippmentMethodApiSlice';
-
+import searchProductsApiSlice from '../redux/searchApi/SearchApiSlice';
 const reducers = combineReducers({
   theme,
   createCustomerBasketSlice,
+  searchProductsApiSlice,
   getCustomerDetailsApiSlice,
   getCustomerCartItemsAliSlice,
   getCustomerBasketApiSlice,

@@ -21,7 +21,12 @@ const CommonSearchHeader = () => {
         alignItems="center"
         paddingVertical="s8"
       >
-        <TouchableOpacity style={{ flex: 1, height: 32 }}>
+        <TouchableOpacity
+          style={{ flex: 1, height: 32 }}
+          onPress={() => {
+            navigation.navigate('SearchScreen');
+          }}
+        >
           <Box
             flex={1}
             backgroundColor="white"
@@ -31,7 +36,6 @@ const CommonSearchHeader = () => {
             paddingHorizontal="s8"
           >
             <Box flexDirection="row" alignItems="center">
-              {/* <SearchIconBlack /> */}
               <Image source={Icons.searchIcon} style={styles.searchIcon} />
               <Box>
                 <Text>Search products here</Text>
