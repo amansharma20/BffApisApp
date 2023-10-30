@@ -1,7 +1,7 @@
 import { Box, Button, Text } from '@/atoms';
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
 import { getOrdersData } from '@/redux/ordersApi/OrdersApiAsyncThunk';
-import { customerId } from '@/utils/appUtils';
+// import { customerId } from '@/utils/appUtils';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -14,9 +14,10 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import OrderItem from './components/OrderItem';
+import { storage } from '@/store';
 const OrderScreen = () => {
-  console.log('customerId: ', customerId);
-
+  const customerIdFromStorage = storage.getString('customerId');
+  const [customerId, setCustomerId] = useState(customerIdFromStorage);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +25,7 @@ const OrderScreen = () => {
   const customerOrders = useSelector(
     state => state?.getOrdersDataApiSlice?.ordersData?.data || [],
   );
+
   const renderItem = ({ item }) => {
     return (
       <Box

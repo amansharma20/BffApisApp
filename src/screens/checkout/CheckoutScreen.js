@@ -19,10 +19,10 @@ import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import CommonOptionsSelector from '@/components/CommonOptionsSelector/CommonOptionsSelector';
 import { getShippmentMethods } from '@/redux/shippmentMethodApi/ShippmentMethodApiAsyncThunk';
 import config from '@/config';
+import HomeShimmers from '@/components/shimmers/HomeShimmers';
 
 const CheckoutScreen = props => {
   const navigation = useNavigation();
-
   const basketId = props.route.params?.basketId;
   const [checkoutDetails, setCheckoutDetails] = useState(null);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
@@ -31,19 +31,15 @@ const CheckoutScreen = props => {
   const [selectedShippmentIndex, setSelectedShippmentIndex] = useState(0);
   const [flag, setFlag] = useState(false);
   const dispatch = useDispatch();
-
   const ADDRESSES_DATA = useSelector(
     state =>
       state?.getCustomerDetailsApiSlice?.customerDetails?.data?.userProfile,
   );
-
   const shippmentMethods = useSelector(
     state =>
       state?.getShippmentMethodsApiSlice?.shippmentMethods?.data
         ?.applicable_shipping_methods,
   );
-  console.log('shippmentMethods: ', shippmentMethods);
-
   useEffect(() => {
     setFlag(false);
     const fetchShippmentMethods = async () => {
@@ -76,7 +72,7 @@ const CheckoutScreen = props => {
     };
     const shipment = async () => {
       const reqBodyShippment = {
-        id: shippmentMethods[selectedShippmentIndex]?.id,
+        id: shippmentMethods?.[selectedShippmentIndex]?.id,
       };
 
       if (shippmentMethods?.length > 0 && flag === true) {
@@ -120,7 +116,7 @@ const CheckoutScreen = props => {
       }
     };
     shipment();
-  }, [basketId, selectedAddressIndex, selectedShippmentIndex]);
+  }, [basketId, selectedAddressIndex, selectedShippmentIndex, flag]);
 
   const orderConfirm = async () => {
     setIsOrderConfirm(true);
@@ -171,42 +167,46 @@ const CheckoutScreen = props => {
                   />
                   {/* <ShippingMethod checkoutDetails={checkoutDetails} /> */}
                 </Box>
-                <Box style={styles.borderBox}>
-                  <Text variant="bold14">Order Summary</Text>
-                  <Box flexDirection="row" justifyContent="space-between">
-                    <Text>Subtotal</Text>
-                    {checkoutDetails?.product_sub_total ? (
-                      <Text>$ {checkoutDetails?.product_sub_total || 0}</Text>
-                    ) : (
-                      ''
-                    )}
-                  </Box>
-                  <Box flexDirection="row" justifyContent="space-between">
-                    <Text>Shipping</Text>
-                    {checkoutDetails?.shipping_total ? (
-                      <Text>$ {checkoutDetails?.shipping_total || 0}</Text>
-                    ) : (
-                      ''
-                    )}
-                  </Box>
-                  <Box flexDirection="row" justifyContent="space-between">
-                    <Text>Sales Tax</Text>
+                {checkoutDetails ? (
+                  <Box style={styles.borderBox}>
+                    <Text variant="bold14">Order Summary</Text>
+                    <Box flexDirection="row" justifyContent="space-between">
+                      <Text>Subtotal</Text>
+                      {checkoutDetails?.product_sub_total ? (
+                        <Text>$ {checkoutDetails?.product_sub_total || 0}</Text>
+                      ) : (
+                        ''
+                      )}
+                    </Box>
+                    <Box flexDirection="row" justifyContent="space-between">
+                      <Text>Shipping</Text>
+                      {checkoutDetails?.shipping_total ? (
+                        <Text>$ {checkoutDetails?.shipping_total || 0}</Text>
+                      ) : (
+                        ''
+                      )}
+                    </Box>
+                    <Box flexDirection="row" justifyContent="space-between">
+                      <Text>Sales Tax</Text>
 
-                    {checkoutDetails?.tax_total ? (
-                      <Text>$ {checkoutDetails?.tax_total || 0}</Text>
-                    ) : (
-                      ''
-                    )}
+                      {checkoutDetails?.tax_total ? (
+                        <Text>$ {checkoutDetails?.tax_total || 0}</Text>
+                      ) : (
+                        ''
+                      )}
+                    </Box>
+                    <Box flexDirection="row" justifyContent="space-between">
+                      <Text variant="bold14">Total</Text>
+                      {checkoutDetails?.order_total ? (
+                        <Text>$ {checkoutDetails?.order_total || 0}</Text>
+                      ) : (
+                        ''
+                      )}
+                    </Box>
                   </Box>
-                  <Box flexDirection="row" justifyContent="space-between">
-                    <Text variant="bold14">Total</Text>
-                    {checkoutDetails?.order_total ? (
-                      <Text>$ {checkoutDetails?.order_total || 0}</Text>
-                    ) : (
-                      ''
-                    )}
-                  </Box>
-                </Box>
+                ) : (
+                  <HomeShimmers />
+                )}
               </Box>
             </>
           ) : (

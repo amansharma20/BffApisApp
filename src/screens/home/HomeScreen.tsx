@@ -14,11 +14,11 @@ import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import { storage } from '@/store';
-
+import HomeShimmers from '@/components/shimmers/HomeShimmers';
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
-
+  const [isLoading, setIsloading] = useState(false);
   const { isUserLoggedIn } = useIsUserLoggedIn();
   console.log('isUserLoggedIn: ', isUserLoggedIn);
   const customerIdFromStorage = storage.getString('customerId');
@@ -52,7 +52,7 @@ const HomeScreen = () => {
       dispatch(getCustomerBasketApi(`${ENV}/getCustomerCart/${customerId}`));
       dispatch(getCustomerDetails(`${ENV}/user-details/${customerId}`));
     }
-    dispatch(createCustomerBasket(config.createCartUrl));
+    dispatch(createCustomerBasket(config.createCartUrl)).then(() => {});
   }, [isUserLoggedIn]);
 
   const newArrivals = useAppSelector(
@@ -66,9 +66,12 @@ const HomeScreen = () => {
   const ViewData = ['ContentFullSection', 'NewArrival', 'BestSelling'];
 
   useEffect(() => {
+    setIsloading(true);
     // dispatch(getNewArrival('sfcc/new-arrivals'));
     dispatch(getNewArrival(config.collections.newArrivals));
-    dispatch(getBestSellings(config.collections.bestSelling));
+    dispatch(getBestSellings(config.collections.bestSelling)).then(() => {
+      setIsloading(false);
+    });
   }, []);
 
   const renderHomeItems = useCallback(
@@ -95,14 +98,18 @@ const HomeScreen = () => {
     <Box flex={1} backgroundColor="white">
       <StatusBar animated={true} backgroundColor={theme.colors.background} />
       <CommonSearchHeader />
-      <FlatList
-        data={ViewData}
-        renderItem={renderHomeItems}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: insets.top,
-        }}
-      />
+      {isLoading ? (
+        <HomeShimmers />
+      ) : (
+        <FlatList
+          data={ViewData}
+          renderItem={renderHomeItems}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingTop: insets.top,
+          }}
+        />
+      )}
     </Box>
   );
 };
