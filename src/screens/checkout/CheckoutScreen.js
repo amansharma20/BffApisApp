@@ -205,7 +205,7 @@ const CheckoutScreen = props => {
                     </Box>
                   </Box>
                 ) : (
-                  <HomeShimmers />
+                  <ActivityIndicator />
                 )}
               </Box>
             </>
