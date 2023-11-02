@@ -14,6 +14,7 @@ import GoBackButton from '@/components/GoBackButton/GoBackButton';
 import ProductItem from '@/components/ProductItem/ProductItem';
 import { searchProducts } from '@/redux/searchApi/SearchApiAsyncThunk';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
+import ProductListShimmer from '@/components/shimmers/ProductListShimmer';
 
 const SearchScreen = () => {
   const [value, setValue] = useState('');
@@ -72,13 +73,13 @@ const SearchScreen = () => {
             autoFocus={true}
             returnKeyType="search"
             onSubmitEditing={handleSearch}
-            style={{ width: '100%', fontSize: 12 }}
+            style={styles.textInput}
           />
         </Box>
       </Box>
       <Box mt="s8" flex={1}>
         {isLoading ? (
-          <ActivityIndicator />
+          <ProductListShimmer />
         ) : (
           <FlatList
             data={products}
@@ -101,7 +102,9 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: '100%',
-    height: 8,
+    fontSize: 12,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
 });
 

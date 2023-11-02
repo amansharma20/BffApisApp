@@ -3,9 +3,13 @@ import React, { useCallback } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
 import { Box, Text, theme } from '@atoms';
 import ProductItem from '../../../components/ProductItem/ProductItem';
-
-const HomePlp = ({ productList, listTitle }) => {
-
+import ProductListShimmer from '@/components/shimmers/ProductListShimmer';
+const HomePlp = ({
+  isLoadingNewArival,
+  isLoadingBestSelling,
+  productList,
+  listTitle,
+}) => {
   const renderItem = ({ item, index }) => {
     return <ProductItem item={item} key={index} />;
   };
@@ -20,7 +24,15 @@ const HomePlp = ({ productList, listTitle }) => {
           ''
         )}
         <Box paddingHorizontal="s6">
-          <FlatList data={productList} renderItem={renderItem} numColumns={2} />
+          {isLoadingNewArival || isLoadingBestSelling ? (
+            <ProductListShimmer />
+          ) : (
+            <FlatList
+              data={productList}
+              renderItem={renderItem}
+              numColumns={2}
+            />
+          )}
         </Box>
       </>
     </Box>

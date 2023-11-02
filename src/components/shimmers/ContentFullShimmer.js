@@ -3,10 +3,9 @@ import { View, Animated, StyleSheet, Text } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 import { Box } from '@atoms';
 
-const HomeShimmers = ({ duration = 1250 }) => {
+const ContentFullShimmer = ({ duration = 1250 }) => {
   const { width } = useWindowDimensions();
   const shimmerValue = new Animated.Value(-width);
-  const items = Array.from({ length: 5 }, (_, index) => `Item ${index + 1}`);
   const startAnimation = () => {
     Animated.loop(
       Animated.timing(shimmerValue, {
@@ -19,35 +18,10 @@ const HomeShimmers = ({ duration = 1250 }) => {
 
   React.useEffect(() => {
     startAnimation();
-  }, [items]);
+  }, []);
 
   return (
     <Box backgroundColor="white" flex={1}>
-      <Box
-        marginHorizontal="s16"
-        backgroundColor="border"
-        overflow="hidden"
-        flex={1}
-        borderRadius={16}
-        mt="s16"
-        minHeight={80}
-        maxHeight={80}
-        mb="s16"
-      >
-        <Animated.View
-          style={[
-            styles.shimmer,
-            {
-              transform: [
-                {
-                  translateX: shimmerValue,
-                },
-              ],
-            },
-          ]}
-        />
-      </Box>
-
       <Box
         marginHorizontal="s16"
         backgroundColor="border"
@@ -70,32 +44,6 @@ const HomeShimmers = ({ duration = 1250 }) => {
           ]}
         />
       </Box>
-
-      {items.map((item, index) => (
-        <Box
-          marginHorizontal="s16"
-          backgroundColor="border"
-          overflow="hidden"
-          flex={1}
-          borderRadius={16}
-          mt="s16"
-          minHeight={100}
-          maxHeight={100}
-        >
-          <Animated.View
-            style={[
-              styles.shimmer,
-              {
-                transform: [
-                  {
-                    translateX: shimmerValue,
-                  },
-                ],
-              },
-            ]}
-          />
-        </Box>
-      ))}
     </Box>
   );
 };
@@ -109,4 +57,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeShimmers;
+export default ContentFullShimmer;

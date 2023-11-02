@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, FlatList, StatusBar } from 'react-native';
+import {
+  StyleSheet,
+  FlatList,
+  StatusBar,
+  useWindowDimensions,
+} from 'react-native';
 import { Box, theme } from '@/atoms';
 import ContentFullSection from './contentFull/ContentFullSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +23,8 @@ import HomeShimmers from '@/components/shimmers/HomeShimmers';
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
-  const [isLoading, setIsloading] = useState(false);
+  const [isLoadingNewArival, setIsloadingNewArrival] = useState(false);
+  const [isLoadingBestSelling, setIsLoadingBestSelling] = useState(false);
   const { isUserLoggedIn } = useIsUserLoggedIn();
   console.log('isUserLoggedIn: ', isUserLoggedIn);
   const customerIdFromStorage = storage.getString('customerId');
@@ -66,11 +72,14 @@ const HomeScreen = () => {
   const ViewData = ['ContentFullSection', 'NewArrival', 'BestSelling'];
 
   useEffect(() => {
-    setIsloading(true);
+    setIsloadingNewArrival(true);
+    setIsLoadingBestSelling(false);
     // dispatch(getNewArrival('sfcc/new-arrivals'));
-    dispatch(getNewArrival(config.collections.newArrivals));
+    dispatch(getNewArrival(config.collections.newArrivals)).then(() => {
+      setIsloadingNewArrival(false);
+    });
     dispatch(getBestSellings(config.collections.bestSelling)).then(() => {
-      setIsloading(false);
+      setIsLoadingBestSelling(false);
     });
   }, []);
 
@@ -81,11 +90,21 @@ const HomeScreen = () => {
           return <ContentFullSection />;
         case 'NewArrival':
           return (
-            <HomePlp productList={newArrivals} listTitle={'New Arrivals'} />
+            <HomePlp
+              isLoadingNewArival={isLoadingNewArival}
+              isLoadingBestSelling={isLoadingBestSelling}
+              productList={newArrivals}
+              listTitle={'New Arrivals'}
+            />
           );
         case 'BestSelling':
           return (
-            <HomePlp productList={bestSellings} listTitle={'Best Selling'} />
+            <HomePlp
+              isLoadingNewArival={isLoadingNewArival}
+              isLoadingBestSelling={isLoadingBestSelling}
+              productList={bestSellings}
+              listTitle={'Best Selling'}
+            />
           );
         default:
           return <></>;
@@ -98,18 +117,18 @@ const HomeScreen = () => {
     <Box flex={1} backgroundColor="white">
       <StatusBar animated={true} backgroundColor={theme.colors.background} />
       <CommonSearchHeader />
-      {isLoading ? (
+      {/* {isLoading ? (
         <HomeShimmers />
       ) : (
-        <FlatList
-          data={ViewData}
-          renderItem={renderHomeItems}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingTop: insets.top,
-          }}
-        />
-      )}
+      )} */}
+      <FlatList
+        data={ViewData}
+        renderItem={renderHomeItems}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: insets.top,
+        }}
+      />
     </Box>
   );
 };

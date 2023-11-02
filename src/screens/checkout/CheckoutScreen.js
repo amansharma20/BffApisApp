@@ -111,7 +111,6 @@ const CheckoutScreen = props => {
           `sfcc/confirmPayment/${basketId}`,
           reqBodyPayment,
         );
-
         setIsLoading(false);
       }
     };

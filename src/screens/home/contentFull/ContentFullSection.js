@@ -3,11 +3,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, theme } from '@atoms';
 import { Animated, Dimensions, StyleSheet, Image } from 'react-native';
+import ContentFullShimmer from '@/components/shimmers/ContentFullShimmer';
 
 const ITEM_WIDTH = Dimensions.get('window').width;
 const ITEM_HEIGHT = 200;
 
 const ContentFullSection = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [blogPageImage, setBlogPageImage] = useState();
   const [cmsData, setCmsData] = useState();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,26 +33,7 @@ const ContentFullSection = () => {
           marginHorizontal="paddingHorizontal"
           backgroundColor="white"
           borderRadius={8}
-          // flex={1}
-          // shadowColor="black"
-          // shadowOpacity={0.1}
-          // shadowRadius={10}
-          // elevation={7}
         >
-          {/* <ImageBackground source={{uri: item.url}} style={styles.itemContainer}>
-          <Box flex={1} justifyContent="flex-end" mb="s40">
-            <></>
-            <Text
-              fontSize={28}
-              color="white"
-              fontWeight="700"
-              numberOfLines={2}
-              marginHorizontal="s16">
-              {item?.description}
-            </Text>
-          </Box>
-        </ImageBackground> */}
-
           <Image
             source={{ uri: item.url }}
             style={{
@@ -66,6 +49,7 @@ const ContentFullSection = () => {
   };
 
   const fetchData = async () => {
+    setIsLoading(true);
     const url =
       'https://graphql.contentful.com/content/v1/spaces/b7hw33ucy3y5/environments/master';
     const query = `{
@@ -94,6 +78,7 @@ const ContentFullSection = () => {
       const response = await fetch(url, options);
       const data = await response.json();
       setCmsData(data?.data?.sushiittoHomeContentCollection);
+      setIsLoading(false);
       // setCmsData(data.data);
       // Process the response data as per your requirements
     } catch (error) {
@@ -130,22 +115,26 @@ const ContentFullSection = () => {
         justifyContent="center"
         mb="s16"
       >
-        {headerData?.map((_, index) => (
-          <Box
-            width={8}
-            height={8}
-            borderRadius={4}
-            backgroundColor={
-              index === currentIndex ? 'activeDot' : 'inactiveDot'
-            }
-            marginHorizontal="s4"
-            key={index}
-            // style={[
-            //   styles.paginationDot,
-            //   index === currentIndex && styles.paginationDotActive,
-            // ]}
-          />
-        ))}
+        {isLoading ? (
+          <ContentFullShimmer />
+        ) : (
+          headerData?.map((_, index) => (
+            <Box
+              width={8}
+              height={8}
+              borderRadius={4}
+              backgroundColor={
+                index === currentIndex ? 'activeDot' : 'inactiveDot'
+              }
+              marginHorizontal="s4"
+              key={index}
+              // style={[
+              //   styles.paginationDot,
+              //   index === currentIndex && styles.paginationDotActive,
+              // ]}
+            />
+          ))
+        )}
       </Box>
 
       {/* <Box paddingHorizontal="paddingHorizontal" mt="s20" backgroundColor='red'>

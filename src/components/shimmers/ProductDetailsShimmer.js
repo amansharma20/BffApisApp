@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, Animated, StyleSheet, Text } from 'react-native';
 import { useWindowDimensions } from 'react-native';
-import { Box } from '@atoms';
-
-const HomeShimmers = ({ duration = 1250 }) => {
+import { Box } from '@/atoms';
+const ProductDetailsShimmer = ({ duration = 1250 }) => {
   const { width } = useWindowDimensions();
   const shimmerValue = new Animated.Value(-width);
-  const items = Array.from({ length: 5 }, (_, index) => `Item ${index + 1}`);
   const startAnimation = () => {
     Animated.loop(
       Animated.timing(shimmerValue, {
@@ -19,7 +17,7 @@ const HomeShimmers = ({ duration = 1250 }) => {
 
   React.useEffect(() => {
     startAnimation();
-  }, [items]);
+  }, []);
 
   return (
     <Box backgroundColor="white" flex={1}>
@@ -29,10 +27,8 @@ const HomeShimmers = ({ duration = 1250 }) => {
         overflow="hidden"
         flex={1}
         borderRadius={16}
-        mt="s16"
-        minHeight={80}
-        maxHeight={80}
-        mb="s16"
+        minHeight={300}
+        maxHeight={300}
       >
         <Animated.View
           style={[
@@ -47,15 +43,16 @@ const HomeShimmers = ({ duration = 1250 }) => {
           ]}
         />
       </Box>
-
       <Box
         marginHorizontal="s16"
+        marginTop="s16"
         backgroundColor="border"
         overflow="hidden"
         flex={1}
         borderRadius={16}
-        minHeight={400}
-        maxHeight={400}
+        minHeight={50}
+        maxHeight={50}
+        width={'30%'}
       >
         <Animated.View
           style={[
@@ -70,32 +67,29 @@ const HomeShimmers = ({ duration = 1250 }) => {
           ]}
         />
       </Box>
-
-      {items.map((item, index) => (
-        <Box
-          marginHorizontal="s16"
-          backgroundColor="border"
-          overflow="hidden"
-          flex={1}
-          borderRadius={16}
-          mt="s16"
-          minHeight={100}
-          maxHeight={100}
-        >
-          <Animated.View
-            style={[
-              styles.shimmer,
-              {
-                transform: [
-                  {
-                    translateX: shimmerValue,
-                  },
-                ],
-              },
-            ]}
-          />
-        </Box>
-      ))}
+      <Box
+        marginHorizontal="s16"
+        marginTop="s16"
+        backgroundColor="border"
+        overflow="hidden"
+        flex={1}
+        borderRadius={16}
+        minHeight={100}
+        maxHeight={100}
+      >
+        <Animated.View
+          style={[
+            styles.shimmer,
+            {
+              transform: [
+                {
+                  translateX: shimmerValue,
+                },
+              ],
+            },
+          ]}
+        />
+      </Box>
     </Box>
   );
 };
@@ -109,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeShimmers;
+export default ProductDetailsShimmer;

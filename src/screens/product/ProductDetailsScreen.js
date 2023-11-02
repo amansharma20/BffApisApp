@@ -27,6 +27,7 @@ import { applicationProperties } from '@/utils/application.properties';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import { storage } from '@/store';
 import config, { ENV } from '@/config';
+import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
 
 const ProductDetailsScreen = props => {
   const customerId = storage.getString('customerId');
@@ -184,7 +185,7 @@ const ProductDetailsScreen = props => {
       <CommonHeader title={productName} searchIcon={true} showCartIcon={true} />
       <SafeAreaView style={styles.container}>
         {isLoading ? (
-          <ActivityIndicator color={theme.colors.sushiittoRed} />
+          <ProductDetailsShimmer />
         ) : (
           <>
             <ScrollView
