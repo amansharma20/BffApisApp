@@ -9,6 +9,7 @@ import { getCustomerDetails } from '@/redux/profileApi/ProfileApiAsyncThunk';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
 import { customerId } from '@/utils/appUtils';
+import CommonTransparentButton from '@/components/CommonSolidButton/CommonTransparentButton';
 
 const PersonalDetailsScreen = () => {
   const { signOut } = useContext(AuthContext);
@@ -56,10 +57,11 @@ const PersonalDetailsScreen = () => {
       </ScrollView>
       <Box
         padding="s16"
-        style={theme.cardVariants.bottomButtonShadow}
+        // style={theme.cardVariants.bottomButtonShadow}
         backgroundColor="white"
       >
-        <CommonSolidButton title="LOGOUT" onPress={onPressLogout} />
+        <CommonTransparentButton title={'LOG OUT'} onPress={onPressLogout} />
+        {/* <CommonSolidButton title="LOGOUT" onPress={onPressLogout} /> */}
       </Box>
     </SafeAreaView>
   );

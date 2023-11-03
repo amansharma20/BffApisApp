@@ -10,6 +10,7 @@ import { ProductsApiAsyncThunk } from '@/redux/productsApi/ProductsApiAsyncThunk
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
 import ProductItem from '@/components/ProductItem/ProductItem';
 import config from '@/config';
+import ProductListShimmer from '@/components/shimmers/ProductListShimmer';
 
 const ProductsByCategory = props => {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +55,7 @@ const ProductsByCategory = props => {
       <CommonHeader title={`${categoryName}`} showCartIcon searchIcon={true} />
       <>
         {isLoading ? (
-          <ActivityIndicator />
+          <ProductListShimmer />
         ) : (
           <FlatList
             data={productsByCategory}
@@ -70,7 +71,6 @@ const ProductsByCategory = props => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
     // padding: 16,
   },

@@ -2,7 +2,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { theme, Text } from '../../atoms';
 
-const CommonSolidButton = ({
+const CommonTransparentButton = ({
   title,
   onPress,
   disabledOnPress,
@@ -38,7 +38,7 @@ const CommonSolidButton = ({
     >
       <Text
         variant="bold14"
-        color="white"
+        color="black"
         marginHorizontal="s8"
         alignSelf="center"
       >
@@ -48,24 +48,26 @@ const CommonSolidButton = ({
   );
 };
 
-export default CommonSolidButton;
+export default CommonTransparentButton;
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: 40,
-    backgroundColor: theme.colors.black,
-    borderRadius: theme.spacing.lml,
+    // backgroundColor: theme.colors.blue,
+    // borderRadius: theme.spacing.lml,
     justifyContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'black',
     paddingHorizontal: 8,
   },
   disabledContainer: {
     width: '100%',
     height: 40,
     backgroundColor: theme.colors.disabled,
-    borderRadius: theme.spacing.lml,
+    // borderRadius: theme.spacing.lml,
     justifyContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',

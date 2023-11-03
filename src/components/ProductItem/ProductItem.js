@@ -2,14 +2,20 @@
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Box, Text } from '@atoms';
 import Icons from '@/assets/constants/Icons';
+import { Box, Text } from '@/atoms';
 import config from '@/config';
 
 const ProductItem = React.memo(({ item }) => {
   const navigation = useNavigation();
   return (
-    <Box marginHorizontal="s4" flexShrink={1} mb="s12" flex={1}>
+    <Box
+      marginHorizontal="s4"
+      backgroundColor="white"
+      flexShrink={1}
+      mb="s12"
+      flex={1}
+    >
       <TouchableOpacity
         onPress={() => {
           navigation.navigate('ProductDetailsScreen', {
@@ -21,7 +27,7 @@ const ProductItem = React.memo(({ item }) => {
           <Image
             source={{
               uri:
-                item?.SkuImageUrl ||
+                item?.skuImageUrl ||
                 item?.product_image ||
                 item?.images?.image1 ||
                 item?.skus?.[0]?.images ||
@@ -56,7 +62,7 @@ const ProductItem = React.memo(({ item }) => {
             <Text variant="semiBold14" color="darkText">
               $
               {item?.basePrice ||
-                item?.product_price?.listPrice ||
+                item?.productPrice?.listPrice ||
                 item?.productPrice?.DEFAULT ||
                 item?.product_price?.sellingPrice}
             </Text>

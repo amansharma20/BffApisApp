@@ -14,6 +14,7 @@ import { getCollections } from '@/redux/collectionsApi/CollectionsApiAsyncThunk'
 import { Box, Text, theme } from '@/atoms';
 import CommonSearchHeader from '@/components/CommonSearchHeader/CommonSearchHeader';
 import config from '@/config';
+import CollectionShimmer from '@/components/shimmers/CollectionShimmer';
 
 const CollectionsScreen = () => {
   const navigation = useNavigation();
@@ -140,11 +141,7 @@ const CollectionsScreen = () => {
           // keyExtractor={item => item.nodeId.toString()}
           contentContainerStyle={styles.flatListContainer}
           ListEmptyComponent={
-            isLoading ? (
-              <ActivityIndicator color={theme.colors.sushiittoRed} />
-            ) : (
-              <Text>EMPTY LIST</Text>
-            )
+            isLoading ? <CollectionShimmer /> : <Text>EMPTY LIST</Text>
           }
         />
       </Box>

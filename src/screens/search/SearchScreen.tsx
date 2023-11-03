@@ -77,7 +77,7 @@ const SearchScreen = () => {
           />
         </Box>
       </Box>
-      <Box mt="s8" flex={1}>
+      <Box mt="s8">
         {isLoading ? (
           <ProductListShimmer />
         ) : (
@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingTop: 0,
     paddingBottom: 0,
+    paddingLeft: 10,
   },
 });
 

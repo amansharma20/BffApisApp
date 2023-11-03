@@ -19,6 +19,7 @@ import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton'
 import { customerId } from '@/utils/appUtils';
 
 import { storage } from '@/store';
+import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
 
 const CartScreen = () => {
   const navigation = useNavigation();
@@ -73,7 +74,7 @@ const CartScreen = () => {
             <CommonHeader title={'Your Cart'} />
             {isLoading ? (
               <>
-                <ActivityIndicator color={theme.colors.sushiittoRed} />
+                <CartScreenShimmer />
               </>
             ) : (
               <>
@@ -159,6 +160,7 @@ const CartScreen = () => {
           >
             <CommonSolidButton
               title="Proceed to Checkout"
+              disabled={isLoading ? true : false}
               onPress={() =>
                 navigation.navigate('CheckoutScreen', {
                   basketId: customerCartId,

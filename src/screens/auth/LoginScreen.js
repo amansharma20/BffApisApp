@@ -153,7 +153,7 @@ export default function LoginScreen(props) {
                 </>
               ) : (
                 <Box
-                  backgroundColor="purple"
+                  backgroundColor="black"
                   height={40}
                   borderRadius={theme.spacing.lml}
                   alignItems="center"

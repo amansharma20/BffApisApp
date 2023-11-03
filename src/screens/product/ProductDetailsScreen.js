@@ -28,7 +28,7 @@ import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import { storage } from '@/store';
 import config, { ENV } from '@/config';
 import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
-
+import Toast from 'react-native-toast-message';
 const ProductDetailsScreen = props => {
   const customerId = storage.getString('customerId');
   const { width } = useWindowDimensions();
@@ -39,7 +39,6 @@ const ProductDetailsScreen = props => {
   const productDetails = useSelector(
     state => state?.getProductDetailsApiSlice?.productDetails?.data,
   );
-  console.log('productDetails: ', productDetails);
 
   const basketId = useSelector(
     state =>
@@ -48,7 +47,7 @@ const ProductDetailsScreen = props => {
   );
 
   const productId =
-    props.route.params.item.ProductId || props.route.params.item.product_id;
+    props.route.params.item.productId || props.route.params.item.product_id;
 
   const productName =
     props?.route?.params?.item?.product_name ||
@@ -65,6 +64,10 @@ const ProductDetailsScreen = props => {
 
     if (isUserLoggedIn && basketId) {
       const addToCart = async () => {
+        Toast.show({
+          type: 'info',
+          text1: 'This is an info message',
+        });
         userToken = await Keychain.getGenericPassword();
 
         let response = await axios.post(

@@ -20,6 +20,7 @@ import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import { storage } from '@/store';
 import HomeShimmers from '@/components/shimmers/HomeShimmers';
+import Toast from 'react-native-toast-message';
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
@@ -117,10 +118,6 @@ const HomeScreen = () => {
     <Box flex={1} backgroundColor="white">
       <StatusBar animated={true} backgroundColor={theme.colors.background} />
       <CommonSearchHeader />
-      {/* {isLoading ? (
-        <HomeShimmers />
-      ) : (
-      )} */}
       <FlatList
         data={ViewData}
         renderItem={renderHomeItems}

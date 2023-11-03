@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import OrderItem from './components/OrderItem';
 import { storage } from '@/store';
+import OrderListShimmer from '@/components/shimmers/OrderListShimmer';
 const OrderScreen = () => {
   const customerIdFromStorage = storage.getString('customerId');
   const [customerId, setCustomerId] = useState(customerIdFromStorage);
@@ -122,7 +123,7 @@ const OrderScreen = () => {
       >
         <Box paddingHorizontal="paddingHorizontal">
           {isLoading ? (
-            <ActivityIndicator />
+            <OrderListShimmer />
           ) : (
             <FlatList
               data={customerOrders}

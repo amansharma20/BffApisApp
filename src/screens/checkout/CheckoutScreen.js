@@ -1,6 +1,6 @@
 import { api } from '@/api/SecureAPI';
 import React, { useEffect, useState } from 'react';
-import { Box, Text, theme } from '@atoms';
+import { Box, Text, theme } from '@/atoms';
 import {
   ActivityIndicator,
   Alert,
@@ -20,6 +20,8 @@ import CommonOptionsSelector from '@/components/CommonOptionsSelector/CommonOpti
 import { getShippmentMethods } from '@/redux/shippmentMethodApi/ShippmentMethodApiAsyncThunk';
 import config from '@/config';
 import HomeShimmers from '@/components/shimmers/HomeShimmers';
+import CheckoutShimmer from '@/components/shimmers/CheckoutShimmer';
+import OrderSummaryShimmer from '@/components/shimmers/OrderSummaryShimmer';
 
 const CheckoutScreen = props => {
   const navigation = useNavigation();
@@ -28,6 +30,7 @@ const CheckoutScreen = props => {
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isOrderConfirm, setIsOrderConfirm] = useState(false);
+  const [orderSummaryLoading, setOrderSummaryLoading] = useState(false);
   const [selectedShippmentIndex, setSelectedShippmentIndex] = useState(0);
   const [flag, setFlag] = useState(false);
   const dispatch = useDispatch();
@@ -55,6 +58,7 @@ const CheckoutScreen = props => {
   }, [basketId, selectedShippmentIndex]);
 
   useEffect(() => {
+    setOrderSummaryLoading(true);
     const reqBody = {
       address1: 'Ocapi',
       address2: 'Demo',
@@ -111,7 +115,7 @@ const CheckoutScreen = props => {
           `sfcc/confirmPayment/${basketId}`,
           reqBodyPayment,
         );
-        setIsLoading(false);
+        setOrderSummaryLoading(false);
       }
     };
     shipment();
@@ -136,7 +140,8 @@ const CheckoutScreen = props => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Box flex={1} backgroundColor="white">
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView>
+          {/* contentContainerStyle={{ flexGrow: 1 }} */}
           <CommonHeader title={'Checkout'} />
           {!isLoading ? (
             <>
@@ -166,51 +171,55 @@ const CheckoutScreen = props => {
                   />
                   {/* <ShippingMethod checkoutDetails={checkoutDetails} /> */}
                 </Box>
-                {checkoutDetails ? (
-                  <Box style={styles.borderBox}>
-                    <Text variant="bold14">Order Summary</Text>
-                    <Box flexDirection="row" justifyContent="space-between">
-                      <Text>Subtotal</Text>
-                      {checkoutDetails?.product_sub_total ? (
-                        <Text>$ {checkoutDetails?.product_sub_total || 0}</Text>
-                      ) : (
-                        ''
-                      )}
-                    </Box>
-                    <Box flexDirection="row" justifyContent="space-between">
-                      <Text>Shipping</Text>
-                      {checkoutDetails?.shipping_total ? (
-                        <Text>$ {checkoutDetails?.shipping_total || 0}</Text>
-                      ) : (
-                        ''
-                      )}
-                    </Box>
-                    <Box flexDirection="row" justifyContent="space-between">
-                      <Text>Sales Tax</Text>
-
-                      {checkoutDetails?.tax_total ? (
-                        <Text>$ {checkoutDetails?.tax_total || 0}</Text>
-                      ) : (
-                        ''
-                      )}
-                    </Box>
-                    <Box flexDirection="row" justifyContent="space-between">
-                      <Text variant="bold14">Total</Text>
-                      {checkoutDetails?.order_total ? (
-                        <Text>$ {checkoutDetails?.order_total || 0}</Text>
-                      ) : (
-                        ''
-                      )}
-                    </Box>
-                  </Box>
-                ) : (
-                  <ActivityIndicator />
-                )}
               </Box>
             </>
           ) : (
             <>
-              <ActivityIndicator color={theme.colors.sushiittoRed} />
+              <CheckoutShimmer />
+            </>
+          )}
+          {checkoutDetails || !orderSummaryLoading ? (
+            <Box paddingHorizontal={'paddingHorizontal'} marginTop="s16">
+              <Box style={styles.borderBox}>
+                <Text variant="bold14">Order Summary</Text>
+                <Box flexDirection="row" justifyContent="space-between">
+                  <Text>Subtotal</Text>
+                  {checkoutDetails?.product_sub_total ? (
+                    <Text>$ {checkoutDetails?.product_sub_total || 0}</Text>
+                  ) : (
+                    ''
+                  )}
+                </Box>
+                <Box flexDirection="row" justifyContent="space-between">
+                  <Text>Shipping</Text>
+                  {checkoutDetails?.shipping_total ? (
+                    <Text>$ {checkoutDetails?.shipping_total || 0}</Text>
+                  ) : (
+                    ''
+                  )}
+                </Box>
+                <Box flexDirection="row" justifyContent="space-between">
+                  <Text>Sales Tax</Text>
+
+                  {checkoutDetails?.tax_total ? (
+                    <Text>$ {checkoutDetails?.tax_total || 0}</Text>
+                  ) : (
+                    ''
+                  )}
+                </Box>
+                <Box flexDirection="row" justifyContent="space-between">
+                  <Text variant="bold14">Total</Text>
+                  {checkoutDetails?.order_total ? (
+                    <Text>$ {checkoutDetails?.order_total || 0}</Text>
+                  ) : (
+                    ''
+                  )}
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <>
+              <OrderSummaryShimmer />
             </>
           )}
         </ScrollView>

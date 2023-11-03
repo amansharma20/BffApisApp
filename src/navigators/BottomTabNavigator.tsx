@@ -8,10 +8,13 @@ import Icons from '../assets/constants/Icons';
 import CollectionsScreen from '@/screens/collection/CollectionsScreen';
 import { theme } from '@/atoms';
 import { BottomTabIcon } from '@/components/bottomTabIcon/BottomTabIcon';
+import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
+import LoginScreen from '@/screens/auth/LoginScreen';
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabNavigator() {
+  const { isUserLoggedIn } = useIsUserLoggedIn();
   return (
     <Tab.Navigator
       screenOptions={{
@@ -68,7 +71,7 @@ export default function BottomTabNavigator() {
       />
       <Tab.Screen
         name="Account"
-        component={ProfileScreen}
+        component={isUserLoggedIn ? ProfileScreen : LoginScreen}
         options={{
           tabBarIcon: ({ focused, color }) => (
             <BottomTabIcon

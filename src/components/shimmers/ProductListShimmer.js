@@ -31,9 +31,9 @@ const ProductListShimmer = ({ duration = 1250 }) => {
               backgroundColor="border"
               overflow="hidden"
               flex={1}
-              borderRadius={16}
+              borderRadius={8}
               mt="s16"
-              minHeight={100}
+              minHeight={250}
               maxHeight={250}
             >
               <Animated.View
@@ -54,7 +54,7 @@ const ProductListShimmer = ({ duration = 1250 }) => {
               backgroundColor="border"
               overflow="hidden"
               flex={1}
-              borderRadius={16}
+              borderRadius={8}
               mt="s10"
               minHeight={30}
               maxHeight={30}
@@ -78,7 +78,7 @@ const ProductListShimmer = ({ duration = 1250 }) => {
               backgroundColor="border"
               overflow="hidden"
               flex={1}
-              borderRadius={16}
+              borderRadius={8}
               mt="s10"
               minHeight={30}
               maxHeight={30}
@@ -104,9 +104,9 @@ const ProductListShimmer = ({ duration = 1250 }) => {
               backgroundColor="border"
               overflow="hidden"
               flex={1}
-              borderRadius={16}
+              borderRadius={8}
               mt="s16"
-              minHeight={100}
+              minHeight={250}
               maxHeight={250}
             >
               <Animated.View
@@ -127,7 +127,7 @@ const ProductListShimmer = ({ duration = 1250 }) => {
               backgroundColor="border"
               overflow="hidden"
               flex={1}
-              borderRadius={16}
+              borderRadius={8}
               mt="s10"
               minHeight={30}
               maxHeight={30}
@@ -151,7 +151,7 @@ const ProductListShimmer = ({ duration = 1250 }) => {
               backgroundColor="border"
               overflow="hidden"
               flex={1}
-              borderRadius={16}
+              borderRadius={8}
               mt="s10"
               minHeight={30}
               maxHeight={30}

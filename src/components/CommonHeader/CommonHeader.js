@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Text, theme } from '@/atoms';
 import GoBackButton from '../GoBackButton/GoBackButton';
 import { CartIcon } from '../../assets/svgs';
@@ -26,8 +26,13 @@ const CommonHeader = ({
   const customerCartItems = useSelector(
     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
   );
-
-  // const numOfCartItems = customerCartItems?.products?.length;
+  const totalCnt = customerCartItems?.products?.reduce(
+    (total, currentValue, currentIndex) => {
+      const itemCount = currentValue?.quantity || 0;
+      return total + itemCount;
+    },
+    0,
+  );
 
   const onPressCart = () => {
     navigation.navigate('CartScreen');
@@ -50,7 +55,7 @@ const CommonHeader = ({
               style={styles.cartContainer}
               onPress={onPressCart}
             >
-              {/* {numOfCartItems > 0 ? (
+              {totalCnt > 0 ? (
                 <>
                   <>
                     <Box
@@ -68,14 +73,14 @@ const CommonHeader = ({
                       }}
                     >
                       <Text fontSize={12} variant="bold18" ml="s2">
-                        {numOfCartItems}
+                        {totalCnt}
                       </Text>
                     </Box>
                   </>
                 </>
               ) : (
                 <></>
-              )} */}
+              )}
               <Image source={Icons.cartIcon} style={styles.wishlistIcon} />
             </TouchableOpacity>
           </>
