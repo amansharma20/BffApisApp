@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+
 // import { Box, Text, theme } from '@atoms';
 import { Box, Text, theme } from '@/atoms';
 import { FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
@@ -6,19 +7,26 @@ import { useNavigation } from '@react-navigation/native';
 import LoginScreen from '../auth/LoginScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
-import config from '@/config';
+import config, { ENV } from '@/config';
 import CommonSearchHeader from '@/components/CommonSearchHeader/CommonSearchHeader';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton';
 import { AuthContext } from '@/navigators/MainNavigator';
 import Icons from '@/assets/constants/Icons';
 import CommonTransparentButton from '@/components/CommonSolidButton/CommonTransparentButton';
+import { getCustomerDetails } from '@/redux/profileApi/ProfileApiAsyncThunk';
+import { storage } from '@/store';
+import ProfileShimmer from '@/components/shimmers/ProfileShimmer';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { signOut } = useContext(AuthContext);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
+  const customerIdFromStorage = storage.getString('customerId');
+  const [customerId, setCustomerId] = useState(customerIdFromStorage);
+  console.log('customerId: ', customerId);
   const onPressLogout = () => {
     signOut();
   };
@@ -37,6 +45,15 @@ export default function ProfileScreen() {
     state =>
       state?.getCustomerDetailsApiSlice?.customerDetails?.data?.userProfile,
   );
+
+  useEffect(() => {
+    setIsLoading(true);
+    dispatch(getCustomerDetails(`${ENV}/user-details/${customerId}`)).then(
+      () => {
+        setIsLoading(false);
+      },
+    );
+  }, [customerId]);
 
   const dataArray = [
     // {
@@ -128,17 +145,21 @@ export default function ProfileScreen() {
                   style={{ height: 100, width: 100 }}
                   borderRadius={60}
                 />
-                <Box
-                  flex={1}
-                  marginLeft="s16"
-                  justifyContent="center"
-                  flexDirection="column"
-                >
-                  <Text variant="bold28">
-                    Hello {userDetails?.[0]?.firstName},
-                  </Text>
-                  <Text>{userDetails?.[0]?.email}</Text>
-                </Box>
+                {isLoading ? (
+                  <ProfileShimmer />
+                ) : (
+                  <Box
+                    flex={1}
+                    marginLeft="s16"
+                    justifyContent="center"
+                    flexDirection="column"
+                  >
+                    <Text variant="bold28">
+                      Hello {userDetails?.[0]?.firstName},
+                    </Text>
+                    <Text>{userDetails?.[0]?.email}</Text>
+                  </Box>
+                )}
               </Box>
             </Box>
             <FlatList

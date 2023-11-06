@@ -54,7 +54,7 @@ const ProductDetailsScreen = props => {
     props?.route?.params?.item?.ProductName;
 
   const [selectedSkuId, setSelectedSkuId] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [imageCarousel, setImageCarousel] = useState([]);
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);

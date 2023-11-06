@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Box, Text } from '@/atoms';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   ActivityIndicator,
@@ -15,6 +15,7 @@ import ProductItem from '@/components/ProductItem/ProductItem';
 import { searchProducts } from '@/redux/searchApi/SearchApiAsyncThunk';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import ProductListShimmer from '@/components/shimmers/ProductListShimmer';
+import { revertAll } from '@/redux/searchApi/SearchApiSlice';
 
 const SearchScreen = () => {
   const [value, setValue] = useState('');
@@ -36,6 +37,12 @@ const SearchScreen = () => {
       setIsLoading(false);
     });
   };
+  useEffect(() => {
+    return () => {
+      dispatch(revertAll());
+      console.log('test'); // set reducer state empty array here.
+    };
+  }, []);
 
   const ListEmptyComponent = () => {
     return (

@@ -1,5 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { searchProducts } from './SearchApiAsyncThunk';
+export const revertAll = createAction('REVERT_ALL');
+
 const initialState = {
   products: [],
   status: 'idle',
@@ -17,6 +19,7 @@ const searchProductsApiSlice = createSlice({
       state.status = 'success';
       state.products = action.payload;
     });
+    builder.addCase(revertAll, () => initialState);
     builder.addCase(searchProducts.rejected, (state, action) => {
       state.status = 'rejected';
     });

@@ -28,7 +28,7 @@ const CheckoutScreen = props => {
   const basketId = props.route.params?.basketId;
   const [checkoutDetails, setCheckoutDetails] = useState(null);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isOrderConfirm, setIsOrderConfirm] = useState(false);
   const [orderSummaryLoading, setOrderSummaryLoading] = useState(false);
   const [selectedShippmentIndex, setSelectedShippmentIndex] = useState(0);

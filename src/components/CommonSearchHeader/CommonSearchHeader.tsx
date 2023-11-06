@@ -5,6 +5,7 @@ import { Text, Box } from '@/atoms';
 import Icons from '@/assets/constants/Icons';
 import { IS_IOS } from '@/utils/appUtils';
 import { useNavigation } from '@react-navigation/native';
+import CartIconComponent from '../cartIcon/CartIconComponent';
 
 const CommonSearchHeader = () => {
   const navigation = useNavigation();
@@ -49,11 +50,8 @@ const CommonSearchHeader = () => {
               <Image source={Icons.icon} style={styles.icon} />
             </Box>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onPressCart}>
-            <Box>
-              <Image source={Icons.cartIcon} style={styles.icon} />
-            </Box>
-          </TouchableOpacity>
+          {/* <Image source={Icons.cartIcon} style={styles.icon} /> */}
+          <CartIconComponent />
         </Box>
       </Box>
     </Box>

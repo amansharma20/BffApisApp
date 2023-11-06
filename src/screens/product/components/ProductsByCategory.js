@@ -13,7 +13,7 @@ import config from '@/config';
 import ProductListShimmer from '@/components/shimmers/ProductListShimmer';
 
 const ProductsByCategory = props => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const isCategoryTrue = props.route.params.isCategoryTrue;
   const categoryId = isCategoryTrue
@@ -32,6 +32,7 @@ const ProductsByCategory = props => {
       state?.getProductsByCategoryApiSlice?.productsByCategory?.data
         ?.productData,
   );
+  console.log('productsByCategory: ', productsByCategory);
 
   useEffect(() => {
     setIsLoading(true);
@@ -51,11 +52,13 @@ const ProductsByCategory = props => {
   );
 
   return (
-    <Box style={styles.container}>
+    <Box style={styles.container} flex={1}>
       <CommonHeader title={`${categoryName}`} showCartIcon searchIcon={true} />
       <>
         {isLoading ? (
-          <ProductListShimmer />
+          <Box backgroundColor="white">
+            <ProductListShimmer />
+          </Box>
         ) : (
           <FlatList
             data={productsByCategory}
@@ -71,7 +74,8 @@ const ProductsByCategory = props => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: theme.colors.background,
+    // backgroundColor: theme.colors.background,
+    backgroundColor: 'white',
     // padding: 16,
   },
 

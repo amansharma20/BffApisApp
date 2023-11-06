@@ -12,7 +12,7 @@ import { CartIcon } from '../../assets/svgs';
 import { useNavigation } from '@react-navigation/native';
 import { FONT } from '@/atoms';
 import { useSelector } from 'react-redux';
-import Icons from '@/assets/constants/Icons';
+import CartIconComponent from '../cartIcon/CartIconComponent';
 
 const CommonHeader = ({
   title,
@@ -21,23 +21,6 @@ const CommonHeader = ({
   showCartIcon = false,
   ...props
 }) => {
-  const navigation = useNavigation();
-
-  const customerCartItems = useSelector(
-    state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
-  );
-  const totalCnt = customerCartItems?.products?.reduce(
-    (total, currentValue, currentIndex) => {
-      const itemCount = currentValue?.quantity || 0;
-      return total + itemCount;
-    },
-    0,
-  );
-
-  const onPressCart = () => {
-    navigation.navigate('CartScreen');
-  };
-
   return (
     <Box flexDirection="row" style={{ backgroundColor: 'white' }}>
       <SafeAreaView style={styles.container} {...props}>
@@ -47,44 +30,7 @@ const CommonHeader = ({
             {title}
           </Text>
         </Box>
-        {/* <SearchIcon /> */}
-
-        {showCartIcon && (
-          <>
-            <TouchableOpacity
-              style={styles.cartContainer}
-              onPress={onPressCart}
-            >
-              {totalCnt > 0 ? (
-                <>
-                  <>
-                    <Box
-                      style={{
-                        backgroundColor: '#F50157',
-                        zIndex: 2,
-                        position: 'absolute',
-                        alignItems: 'center',
-                        width: 16,
-                        height: 16,
-                        justifyContent: 'center',
-                        flexDirection: 'row',
-                        borderRadius: 100,
-                        marginLeft: 16,
-                      }}
-                    >
-                      <Text fontSize={12} variant="bold18" ml="s2">
-                        {totalCnt}
-                      </Text>
-                    </Box>
-                  </>
-                </>
-              ) : (
-                <></>
-              )}
-              <Image source={Icons.cartIcon} style={styles.wishlistIcon} />
-            </TouchableOpacity>
-          </>
-        )}
+        <CartIconComponent />
       </SafeAreaView>
     </Box>
   );

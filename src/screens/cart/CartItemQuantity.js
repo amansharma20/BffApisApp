@@ -8,7 +8,7 @@ import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 
 const CartItemQuantity = ({ cartItem, customerCartId, removeItemTrigger }) => {
   const [isloading, setIsLoading] = useState(false);
-
+  const [itemQuantity, setItemQuantity] = useState(cartItem?.quantity);
   const dispatch = useDispatch();
 
   const changeQuantity = async (itemId, count, indexId) => {
@@ -69,7 +69,13 @@ const CartItemQuantity = ({ cartItem, customerCartId, removeItemTrigger }) => {
         </Box>
       )}
       <TouchableOpacity
-        onPress={() => changeQuantity(cartItem?.itemId, cartItem?.quantity + 1)}
+        onPress={() =>
+          changeQuantity(
+            cartItem?.itemId,
+            cartItem?.quantity + 1,
+            cartItem?.indexId,
+          )
+        }
       >
         <Text style={styles.quantityText}>+</Text>
       </TouchableOpacity>

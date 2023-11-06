@@ -7,6 +7,7 @@ import { Box, Text } from '@/atoms';
 import config from '@/config';
 
 const ProductItem = React.memo(({ item }) => {
+  console.log('item: ', item?.productPrice?.sellingPrice);
   const navigation = useNavigation();
   return (
     <Box
@@ -64,7 +65,8 @@ const ProductItem = React.memo(({ item }) => {
               {item?.basePrice ||
                 item?.productPrice?.listPrice ||
                 item?.productPrice?.DEFAULT ||
-                item?.product_price?.sellingPrice}
+                item?.product_price?.sellingPrice ||
+                item?.productPrice?.sellingPrice}
             </Text>
           </Box>
         </Box>
