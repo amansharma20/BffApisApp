@@ -65,7 +65,6 @@ const CommonOptionsSelector = ({
   const renderItem = ({ item }) => <Item item={item} />;
 
   const addOptions = DATA?.map((item, index) => {
-    console.log('DATA: ', DATA);
     return {
       title: item.firstName || item.name,
       isSelected: index === selectedIndex ? true : false,

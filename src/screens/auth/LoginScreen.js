@@ -18,6 +18,7 @@ import SignUpScreen from './SignUpScreen';
 import { reduxStorage } from '@/store';
 import { createCustomerBasket } from '@/redux/createBasketApi/CreateBasketApiAsyncThunk';
 import config from '@/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen(props) {
   const dispatch = useDispatch();
@@ -49,6 +50,7 @@ export default function LoginScreen(props) {
       var token = response?.data?.data?.bearerToken;
       const customerId = response?.data?.data?.customer_id;
       reduxStorage.setItem('customerId', customerId);
+      await AsyncStorage.setItem('tokenExpiry', token);
       // dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
       // dispatch(createCustomerBasket(`${config.createCartUrl}`));
       signIn(token);

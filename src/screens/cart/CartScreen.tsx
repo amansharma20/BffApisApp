@@ -20,7 +20,7 @@ import { customerId } from '@/utils/appUtils';
 
 import { storage } from '@/store';
 import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
-
+import navigateAuthRoutes from '@/hooks/navigateAuthRoutes';
 const CartScreen = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
@@ -162,7 +162,7 @@ const CartScreen = () => {
               title="Proceed to Checkout"
               disabled={isLoading ? true : false}
               onPress={() =>
-                navigation.navigate('CheckoutScreen', {
+                navigateAuthRoutes('CheckoutScreen', {
                   basketId: customerCartId,
                 })
               }
