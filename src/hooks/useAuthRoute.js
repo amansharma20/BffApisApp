@@ -5,10 +5,10 @@ import DynamicSnapPointBottomSheet from '@/components/bottomsheets/DynamicSnapPo
 import LoginScreen from '@/screens/auth/LoginScreen';
 
 export const useAuthRoute = () => {
-  const bottomSheetRef = useRef(null);
-  const handleExpandPress = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
+  // const bottomSheetRef = useRef(null);
+  // const handleExpandPress = useCallback(() => {
+  //   bottomSheetRef.current?.expand();
+  // }, []);
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const navigation = useNavigation();
   const getAuthRoute = useCallback(
