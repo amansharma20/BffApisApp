@@ -1,12 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
-import { useIsUserLoggedIn } from './useIsUserLoggedIn';
-const navigateAuthRoutes = (screenToNavigate, props) => {
-  const navigation = useNavigation();
-  const { isUserLoggedIn } = useIsUserLoggedIn();
+const customHook = (isUserLoggedIn, navigation, screenToNaviagte, props) => {
   if (isUserLoggedIn) {
-    navigation.navigate(screenToNavigate, props);
+    return navigation.navigate(screenToNaviagte, props);
   } else {
-    navigation.navigate('LoginScreen');
+    return navigation.navigate('LoginScreen');
   }
 };
-export default navigateAuthRoutes;
+export default customHook;

@@ -20,7 +20,7 @@ import { customerId } from '@/utils/appUtils';
 
 import { storage } from '@/store';
 import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
-import navigateAuthRoutes from '@/hooks/navigateAuthRoutes';
+import customHook from '@/hooks/navigateAuthRoutes';
 const CartScreen = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
@@ -33,8 +33,6 @@ const CartScreen = () => {
       state?.getCustomerBasketApiSlice?.customerBasket?.data?.baskets?.[0]
         ?.basket_id,
   );
-
-  console.log('customerCartId: ', customerCartId);
 
   const customerCartItems = useSelector(
     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
@@ -151,27 +149,27 @@ const CartScreen = () => {
           </>
         )}
       </Box>
-      {customerCartItems?.products?.length && isUserLoggedIn ? (
-        <>
-          <Box
-            padding="s16"
-            style={theme.cardVariants.bottomButtonShadow}
-            backgroundColor="white"
-          >
-            <CommonSolidButton
-              title="Proceed to Checkout"
-              disabled={isLoading ? true : false}
-              onPress={() =>
-                navigateAuthRoutes('CheckoutScreen', {
-                  basketId: customerCartId,
-                })
-              }
-            />
-          </Box>
-        </>
-      ) : (
+      {/* {customerCartItems?.products?.length && isUserLoggedIn ? ( */}
+      <>
+        <Box
+          padding="s16"
+          style={theme.cardVariants.bottomButtonShadow}
+          backgroundColor="white"
+        >
+          <CommonSolidButton
+            title="Proceed to Checkout"
+            disabled={isLoading ? true : false}
+            onPress={() =>
+              customHook(isUserLoggedIn, navigation, 'CheckoutScreen', {
+                basketId: customerCartId,
+              })
+            }
+          />
+        </Box>
+      </>
+      {/* ) : (
         <></>
-      )}
+      )} */}
     </SafeAreaView>
   );
 };
