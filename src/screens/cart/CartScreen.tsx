@@ -20,9 +20,10 @@ import { customerId } from '@/utils/appUtils';
 
 import { storage } from '@/store';
 import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
-
+import { useAuthRoute } from '@/hooks/useAuthRoute';
 const CartScreen = () => {
   const navigation = useNavigation();
+  const { getAuthRoute } = useAuthRoute();
   const [isLoading, setIsLoading] = useState(true);
   const [cartItemsArray, setCartItemsArray] = useState([]);
   const { isUserLoggedIn } = useIsUserLoggedIn();
@@ -33,8 +34,6 @@ const CartScreen = () => {
       state?.getCustomerBasketApiSlice?.customerBasket?.data?.baskets?.[0]
         ?.basket_id,
   );
-
-  console.log('customerCartId: ', customerCartId);
 
   const customerCartItems = useSelector(
     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
@@ -151,27 +150,31 @@ const CartScreen = () => {
           </>
         )}
       </Box>
-      {customerCartItems?.products?.length && isUserLoggedIn ? (
-        <>
-          <Box
-            padding="s16"
-            style={theme.cardVariants.bottomButtonShadow}
-            backgroundColor="white"
-          >
-            <CommonSolidButton
-              title="Proceed to Checkout"
-              disabled={isLoading ? true : false}
-              onPress={() =>
-                navigation.navigate('CheckoutScreen', {
-                  basketId: customerCartId,
-                })
-              }
-            />
-          </Box>
-        </>
-      ) : (
+      {/* {customerCartItems?.products?.length && isUserLoggedIn ? ( */}
+      <>
+        <Box
+          padding="s16"
+          style={theme.cardVariants.bottomButtonShadow}
+          backgroundColor="white"
+        >
+          <CommonSolidButton
+            title="Proceed to Checkout"
+            disabled={
+              isLoading || customerCartItems?.products?.length <= 0
+                ? true
+                : false
+            }
+            onPress={() =>
+              getAuthRoute('CheckoutScreen', {
+                basketId: customerCartId,
+              })
+            }
+          />
+        </Box>
+      </>
+      {/* ) : (
         <></>
-      )}
+      )} */}
     </SafeAreaView>
   );
 };

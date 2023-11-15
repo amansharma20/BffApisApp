@@ -22,9 +22,10 @@ import config from '@/config';
 import HomeShimmers from '@/components/shimmers/HomeShimmers';
 import CheckoutShimmer from '@/components/shimmers/CheckoutShimmer';
 import OrderSummaryShimmer from '@/components/shimmers/OrderSummaryShimmer';
-
+import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 const CheckoutScreen = props => {
   const navigation = useNavigation();
+  const { isUserLoggedIn } = useIsUserLoggedIn();
   const basketId = props.route.params?.basketId;
   const [checkoutDetails, setCheckoutDetails] = useState(null);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
@@ -122,19 +123,23 @@ const CheckoutScreen = props => {
   }, [basketId, selectedAddressIndex, selectedShippmentIndex, flag]);
 
   const orderConfirm = async () => {
-    setIsOrderConfirm(true);
-    const reqBody = {
-      basket_id: basketId,
-    };
-    const confirmOrder = await api.post(`sfcc/placeOrder`, reqBody);
-    if (confirmOrder?.data?.status === 200) {
-      dispatch(createCustomerBasket(`${config.createCartUrl}`));
-      dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
-      dispatch(getCustomerCartItems(`sfcc/cartDetail/${basketId}`));
-      Alert.alert('Order Placed', 'Your order is placed successfully');
-      navigation.replace('OrdersScreen');
+    if (isUserLoggedIn) {
+      setIsOrderConfirm(true);
+      const reqBody = {
+        basket_id: basketId,
+      };
+      const confirmOrder = await api.post(`sfcc/placeOrder`, reqBody);
+      if (confirmOrder?.data?.status === 200) {
+        dispatch(createCustomerBasket(`${config.createCartUrl}`));
+        dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
+        dispatch(getCustomerCartItems(`sfcc/cartDetail/${basketId}`));
+        Alert.alert('Order Placed', 'Your order is placed successfully');
+        navigation.replace('OrdersScreen');
+      }
+      setIsOrderConfirm(false);
+    } else {
+      navigation.navigate('LoginScreen');
     }
-    setIsOrderConfirm(false);
   };
 
   return (

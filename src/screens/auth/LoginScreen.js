@@ -15,9 +15,11 @@ import CommonSolidButton from '../../components/CommonSolidButton/CommonSolidBut
 import SelectAuthMethod from './components/SelectAuthMethod';
 import { useDispatch } from 'react-redux';
 import SignUpScreen from './SignUpScreen';
+import { CrossIcon } from '@/assets/svgs';
 import { reduxStorage } from '@/store';
 import { createCustomerBasket } from '@/redux/createBasketApi/CreateBasketApiAsyncThunk';
 import config from '@/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen(props) {
   const dispatch = useDispatch();
@@ -49,6 +51,7 @@ export default function LoginScreen(props) {
       var token = response?.data?.data?.bearerToken;
       const customerId = response?.data?.data?.customer_id;
       reduxStorage.setItem('customerId', customerId);
+      await AsyncStorage.setItem('tokenExpiry', token);
       // dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
       // dispatch(createCustomerBasket(`${config.createCartUrl}`));
       signIn(token);
@@ -96,9 +99,12 @@ export default function LoginScreen(props) {
             onPress={() => {
               navigation.goBack();
             }}
-          />
+          >
+            <Box padding="s4">
+              <CrossIcon />
+            </Box>
+          </TouchableOpacity>
         </Box>
-
         <Box mt="s4">
           <SelectAuthMethod
             selectedOption={selectedOption}

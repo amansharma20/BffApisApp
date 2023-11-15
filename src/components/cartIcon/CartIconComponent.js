@@ -6,9 +6,10 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 // import { CartIcon } from '../../assets/svgs';
 import Icons from '@/assets/constants/Icons';
-
+import { useAuthRoute } from '@/hooks/useAuthRoute';
 const CartIconComponent = () => {
   const navigation = useNavigation();
+  const { getAuthRoute } = useAuthRoute();
   const customerCartItems = useSelector(
     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
   );
@@ -21,7 +22,7 @@ const CartIconComponent = () => {
   );
 
   const onPressCart = () => {
-    navigation.navigate('CartScreen');
+    getAuthRoute('CartScreen', {});
   };
   return (
     <Box>
