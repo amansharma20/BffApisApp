@@ -30,7 +30,11 @@ const CommonHeader = ({
             {title}
           </Text>
         </Box>
-        <CartIconComponent />
+        {showCartIcon && (
+          <>
+            <CartIconComponent />
+          </>
+        )}
       </SafeAreaView>
     </Box>
   );

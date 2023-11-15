@@ -148,7 +148,7 @@ const CheckoutScreen = props => {
               <Box paddingHorizontal="paddingHorizontal">
                 <Box mb="s16">
                   <Text mb="s8" variant="regular16">
-                    Select Address
+                    Select address
                   </Text>
                   <CommonOptionsSelector
                     DATA={ADDRESSES_DATA}

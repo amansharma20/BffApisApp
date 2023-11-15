@@ -7,7 +7,7 @@ import { Box, Text } from '@/atoms';
 import config from '@/config';
 
 const ProductItem = React.memo(({ item }) => {
-  console.log('item: ', item?.productPrice?.sellingPrice);
+  console.log('item: ', item);
   const navigation = useNavigation();
   return (
     <Box

@@ -102,7 +102,7 @@ const OrderScreen = () => {
   };
   useEffect(() => {
     setIsLoading(true);
-    dispatch(getOrdersData(`/sfcc/order-Details/${customerId}/orders`))
+    dispatch(getOrdersData(`sfcc/order-Details/${customerId}/orders`))
       .then(res => {
         setIsLoading(false);
       })

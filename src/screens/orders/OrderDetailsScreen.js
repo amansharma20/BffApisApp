@@ -1,14 +1,37 @@
 import { Text, Box, theme } from '@/atoms';
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
 import React from 'react';
-import {
-  FlatList,
-  ScrollView,
-} from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 import OrderItem from './components/OrderItem';
 import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton';
 const OrderDetailsScreen = props => {
   const orderData = props?.route?.params?.orderData;
+
+  console.log(
+    '🚀 ~ file: OrderDetailsScreen.js:13 ~ OrderDetailsScreen ~ orderData?.creation_date:',
+    orderData?.creation_date,
+  );
+
+  function convertToReadableFormat(timestamp) {
+    const date = new Date(timestamp);
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    };
+
+    return date.toLocaleString('en-US', options);
+  }
+
+  const timestamp = orderData?.creation_date;
+  const readableFormat = convertToReadableFormat(timestamp);
+
+  console.log(
+    '🚀 ~ file: OrderDetailsScreen.js:33 ~ OrderDetailsScreen ~ readableFormat:',
+    readableFormat,
+  );
 
   return (
     <>
@@ -27,8 +50,12 @@ const OrderDetailsScreen = props => {
       >
         <Box mt="s14" paddingHorizontal="paddingHorizontal">
           <Box flexDirection="row" justifyContent="space-between">
-            <Text>Order: {orderData?.order_no}</Text>
-            <Text>{orderData?.creation_date} </Text>
+            <Box width={'50%'}>
+              <Text>Order: {orderData?.order_no}</Text>
+            </Box>
+            <Box width={'50%'}>
+              <Text>{readableFormat}</Text>
+            </Box>
           </Box>
           <Box flexDirection="row" mt="s12" justifyContent="space-between">
             <Text>Order total: ${orderData?.order_total} </Text>

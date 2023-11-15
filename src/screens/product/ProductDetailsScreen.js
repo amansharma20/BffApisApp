@@ -29,6 +29,7 @@ import { storage } from '@/store';
 import config, { ENV } from '@/config';
 import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
 import Toast from 'react-native-toast-message';
+
 const ProductDetailsScreen = props => {
   const customerId = storage.getString('customerId');
   const { width } = useWindowDimensions();
@@ -51,7 +52,8 @@ const ProductDetailsScreen = props => {
 
   const productName =
     props?.route?.params?.item?.product_name ||
-    props?.route?.params?.item?.ProductName;
+    props?.route?.params?.item?.ProductName ||
+    props?.route?.params?.item?.productName;
 
   const [selectedSkuId, setSelectedSkuId] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +61,7 @@ const ProductDetailsScreen = props => {
   const [imageCarousel, setImageCarousel] = useState([]);
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
   const [productImage, setProductImage] = useState('');
+
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
 
@@ -208,9 +211,7 @@ const ProductDetailsScreen = props => {
                 /> */}
                   <CarouselCards images={imageCarousel} crosSelling={null} />
                   <Box>
-                    <Text variant="bold24">
-                      {productDetails?.name || productDetails?.Name}
-                    </Text>
+                    <Text variant="bold24">{productName}</Text>
                     <Text variant="bold16" mt="s6">
                       ${productDetails?.skus?.[0]?.bestPrice}
                     </Text>
