@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Text, theme } from '@/atoms';
-import { TouchableOpacity, Image } from 'react-native';
-import { ActivityIndicator, StyleSheet } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { RemoveIcon } from '@/assets/svgs';
-import { api } from '@/api/SecureAPI';
+import React from 'react';
+import { Box, Text } from '@/atoms';
+import { Image } from 'react-native';
+
 const OrderItem = ({ item }) => {
-  console.log('item: ', item);
   return (
     <Box
       borderRadius={8}
