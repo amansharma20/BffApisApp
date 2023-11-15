@@ -20,9 +20,10 @@ import { customerId } from '@/utils/appUtils';
 
 import { storage } from '@/store';
 import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
-import customHook from '@/hooks/navigateAuthRoutes';
+import { useAuthRoute } from '@/hooks/useAuthRoute';
 const CartScreen = () => {
   const navigation = useNavigation();
+  const { getAuthRoute } = useAuthRoute();
   const [isLoading, setIsLoading] = useState(true);
   const [cartItemsArray, setCartItemsArray] = useState([]);
   const { isUserLoggedIn } = useIsUserLoggedIn();
@@ -158,9 +159,13 @@ const CartScreen = () => {
         >
           <CommonSolidButton
             title="Proceed to Checkout"
-            disabled={isLoading ? true : false}
+            disabled={
+              isLoading || customerCartItems?.products?.length <= 0
+                ? true
+                : false
+            }
             onPress={() =>
-              customHook(isUserLoggedIn, navigation, 'CheckoutScreen', {
+              getAuthRoute('CheckoutScreen', {
                 basketId: customerCartId,
               })
             }

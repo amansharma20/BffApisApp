@@ -32,7 +32,8 @@ const ProductItem = React.memo(({ item }) => {
                 item?.product_image ||
                 item?.images?.image1 ||
                 item?.skus?.[0]?.images ||
-                item?.productImage,
+                item?.productImage ||
+                item?.SkuImageUrl,
             }}
             style={[
               styles.productImage,

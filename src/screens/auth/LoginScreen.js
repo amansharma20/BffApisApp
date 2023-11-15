@@ -15,6 +15,7 @@ import CommonSolidButton from '../../components/CommonSolidButton/CommonSolidBut
 import SelectAuthMethod from './components/SelectAuthMethod';
 import { useDispatch } from 'react-redux';
 import SignUpScreen from './SignUpScreen';
+import { CrossIcon } from '@/assets/svgs';
 import { reduxStorage } from '@/store';
 import { createCustomerBasket } from '@/redux/createBasketApi/CreateBasketApiAsyncThunk';
 import config from '@/config';
@@ -98,9 +99,12 @@ export default function LoginScreen(props) {
             onPress={() => {
               navigation.goBack();
             }}
-          />
+          >
+            <Box padding="s4">
+              <CrossIcon />
+            </Box>
+          </TouchableOpacity>
         </Box>
-
         <Box mt="s4">
           <SelectAuthMethod
             selectedOption={selectedOption}
