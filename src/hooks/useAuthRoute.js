@@ -12,9 +12,9 @@ export const useAuthRoute = () => {
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const navigation = useNavigation();
   const getAuthRoute = useCallback(
-    (screenToNaviagte, props) => {
+    (screenToNavigate, props) => {
       if (isUserLoggedIn) {
-        navigation.navigate(screenToNaviagte, props);
+        navigation.navigate(screenToNavigate, props);
       } else {
         navigation.navigate('LoginScreen');
       }
