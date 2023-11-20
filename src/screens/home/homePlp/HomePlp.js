@@ -4,6 +4,7 @@ import { StyleSheet, FlatList } from 'react-native';
 import { Box, Text, theme } from '@atoms';
 import ProductItem from '../../../components/ProductItem/ProductItem';
 import ProductListShimmer from '@/components/shimmers/ProductListShimmer';
+
 const HomePlp = ({
   isLoadingNewArival,
   isLoadingBestSelling,

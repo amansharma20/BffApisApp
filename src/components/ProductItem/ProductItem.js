@@ -34,10 +34,7 @@ const ProductItem = React.memo(({ item }) => {
                 item?.productImage ||
                 item?.SkuImageUrl,
             }}
-            style={[
-              styles.productImage,
-              { resizeMode: config.app.isSfcc ? 'cover' : 'contain' },
-            ]}
+            style={[styles.productImage, { resizeMode: 'cover' }]}
           />
         </Box>
         <Box maxWidth="95%">

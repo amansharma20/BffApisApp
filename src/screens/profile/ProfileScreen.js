@@ -39,7 +39,7 @@ export default function ProfileScreen() {
   const IS_VTEX = config.app.isVtex;
   console.log('IS_VTEX: ', IS_VTEX);
 
-  const baseUrl = config.baseUrl.default;
+  const baseUrl = config.baseUrl;
 
   const userDetails = useSelector(
     state =>

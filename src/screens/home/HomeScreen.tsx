@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  FlatList,
-  StatusBar,
-  useWindowDimensions,
-} from 'react-native';
+import { StyleSheet, FlatList, StatusBar } from 'react-native';
 import { Box, theme } from '@/atoms';
 import ContentFullSection from './contentFull/ContentFullSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,8 +14,7 @@ import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import { storage } from '@/store';
-import HomeShimmers from '@/components/shimmers/HomeShimmers';
-import Toast from 'react-native-toast-message';
+
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
@@ -59,7 +53,9 @@ const HomeScreen = () => {
       dispatch(getCustomerBasketApi(`${ENV}/getCustomerCart/${customerId}`));
       dispatch(getCustomerDetails(`${ENV}/user-details/${customerId}`));
     }
-    dispatch(createCustomerBasket(config.createCartUrl)).then(() => {});
+    dispatch(
+      createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),
+    ).then(() => {});
   }, [isUserLoggedIn]);
 
   const newArrivals = useAppSelector(
@@ -71,6 +67,17 @@ const HomeScreen = () => {
   );
 
   const ViewData = ['ContentFullSection', 'NewArrival', 'BestSelling'];
+
+  console.log('🚀 ~ file: HomeScreen.tsx:70 ~ HomeScreen ~ ENV:', ENV);
+  config.collections.newArrivals;
+  console.log(
+    '🚀 ~ file: HomeScreen.tsx:71 ~ HomeScreen ~ config.collections.newArrivals:',
+    config.collections.newArrivals,
+  );
+  console.log(
+    '🚀 ~ file: HomeScreen.tsx:76 ~ HomeScreen ~ config.baseUrl:',
+    config.baseUrl,
+  );
 
   useEffect(() => {
     setIsloadingNewArrival(true);

@@ -22,8 +22,8 @@ const ProductsByCategory = props => {
 
   const categoryName = props.route?.params?.item?.name;
   const categoryEndPoint = isCategoryTrue
-    ? config.productsByCategory
-    : config.productsBySubCategory;
+    ? config.productsByCategoryUrl
+    : config.productsBySubCategoryUrl;
 
   const dispatch = useDispatch();
 
