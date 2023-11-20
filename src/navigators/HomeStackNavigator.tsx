@@ -21,7 +21,6 @@ const Stack = createStackNavigator();
 
 const HomeStackNavigator = () => {
   const { isUserLoggedIn } = useIsUserLoggedIn();
-  console.log('isUserLoggedIn12312312312312312: ', isUserLoggedIn);
 
   return (
     <Stack.Navigator

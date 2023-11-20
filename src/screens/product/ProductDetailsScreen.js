@@ -48,7 +48,9 @@ const ProductDetailsScreen = props => {
   );
 
   const productId =
-    props.route.params.item.productId || props.route.params.item.product_id;
+    props.route.params.item?.productId ||
+    props.route.params.item?.product_id ||
+    props.route.params.item?.ProductId;
 
   const productName =
     props?.route?.params?.item?.product_name ||
