@@ -52,9 +52,9 @@ export default function LoginScreen(props) {
       const customerId = response?.data?.data?.customer_id;
       reduxStorage.setItem('customerId', customerId);
       await AsyncStorage.setItem('tokenExpiry', token);
-      // dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
-      // dispatch(createCustomerBasket(`${config.createCartUrl}`));
       signIn(token);
+      // dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
+      // dispatch(createCustomerBasket(`${config.cartUrl}createCart`));
     } else {
       Alert.alert('server error');
       setIsLoading(false);

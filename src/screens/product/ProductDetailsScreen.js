@@ -6,8 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
-  FlatList,
   SafeAreaView,
   Alert,
 } from 'react-native';
@@ -23,12 +21,11 @@ import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton'
 import { getProductDetails } from '@/redux/productDetails/ProductDetailsApiAsyncThunk';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import axios from 'axios';
-import { applicationProperties } from '@/utils/application.properties';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import { storage } from '@/store';
 import config, { ENV } from '@/config';
 import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
-import Toast from 'react-native-toast-message';
+import ProductVariants from './components/ProductVariants';
 
 const ProductDetailsScreen = props => {
   const customerId = storage.getString('customerId');
@@ -36,6 +33,8 @@ const ProductDetailsScreen = props => {
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [variantValue, setSelectedVariants] = useState([]);
+  const [customerSelectedVariants, setCustomerSelectedVariants] = useState([]);
 
   const productDetails = useSelector(
     state => state?.getProductDetailsApiSlice?.productDetails?.data,
@@ -64,19 +63,33 @@ const ProductDetailsScreen = props => {
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
   const [productImage, setProductImage] = useState('');
 
+  const onCustomerSelectedVariant = selectedVariant => {
+    const key = Object.keys(selectedVariant)[0];
+    const value = selectedVariant[key];
+    const index = customerSelectedVariants.findIndex(
+      item => Object.keys(item)[0] === key,
+    );
+    if (index !== -1) {
+      setCustomerSelectedVariants(prevVariants => {
+        const updatedVariants = [...prevVariants];
+        updatedVariants[index][key] = value;
+        return updatedVariants;
+      });
+    } else {
+      setCustomerSelectedVariants(prevVariants => [
+        ...prevVariants,
+        selectedVariant,
+      ]);
+    }
+  };
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
 
     if (isUserLoggedIn && basketId) {
       const addToCart = async () => {
-        Toast.show({
-          type: 'info',
-          text1: 'This is an info message',
-        });
         userToken = await Keychain.getGenericPassword();
-
         let response = await axios.post(
-          applicationProperties.baseUrl + `${config.addToCartUrl}/${basketId}`,
+          config.cartUrl + `${config.addToCartUrl}/${basketId}`,
           {
             itemId: selectedSkuId,
             quantity: 1,
@@ -89,28 +102,31 @@ const ProductDetailsScreen = props => {
             withCredentials: true,
           },
         );
-
+        console.log('response: ', response?.data);
+        console.log('response: ', response?.status);
         if (response?.status == 401) {
           setIsLoadingAddToCart(false);
           Alert.alert('Unauthorize', 'Your session is expired , Please login!');
           navigation.navigate('LoginScreen');
-        } else if (response.status == 201) {
+        } else if (response.status == 200) {
           setIsLoadingAddToCart(false);
-          dispatch(getCustomerCartItems(`sfcc/cartDetail/${basketId}`)).then(
-            res => {
-              if (res.payload.status === 200) {
-                console.log('carts api call successful');
-                setIsLoadingAddToCart(false);
-                setIsLoading(false);
-              } else {
-                setIsLoading(false);
-                setIsLoadingAddToCart(false);
-                console.log('carts api call not successful');
-              }
-            },
-          );
+          dispatch(
+            getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
+          ).then(res => {
+            console.log('res.payload.status: ', res.payload.status);
+            if (res.payload.status === 200) {
+              console.log('carts api call successful');
+              setIsLoadingAddToCart(false);
+              setIsLoading(false);
+            } else {
+              setIsLoading(false);
+              setIsLoadingAddToCart(false);
+              console.log('carts api call not successful');
+            }
+          });
           Alert.alert('Product Added to cart');
         } else {
+          console.log('hii');
           setIsLoadingAddToCart(false);
           Alert.alert('Something went wrong');
         }
@@ -169,24 +185,62 @@ const ProductDetailsScreen = props => {
     );
   };
 
-  const renderItem = ({ item, index }) => {
-    const backgroundColor =
-      item.sku == selectedSkuId ? theme.colors.lightGrey : '#FFF';
-    const color = item.sku == selectedSkuId ? 'white' : 'black';
+  // const renderItem = ({ item, index }) => {
+  //   console.log('item: ', item);
+  //   Object.keys(item).map(key => {
+  //     console.log('key: ', item?.[key]);
+  //   });
+  //   return (
+  //     <Box paddingVertical="s8">
+  //       {Object.keys(item).map(key => {
+  //         // console.log('item?.[key]: ', item?.[key]);
+  //         if (item?.[key]?.length == 1) {
+  //           setSelectedVariants(item);
+  //         }
+  //         return (
+  //           <>
+  //             <Text fontSize="16" key={key}>{`${key}`}</Text>
+  //             <FlatList
+  //               contentContainerStyle={{
+  //                 flexDirection: 'row',
+  //                 flexBasis: 1,
+  //                 justifyContent: 'space-between',
+  //                 paddingHorizontal: 4,
+  //               }}
+  //               numColumns={4}
+  //               data={item?.[key]}
+  //               renderItem={renderChildFlatlist}
+  //             />
+  //           </>
+  //         );
+  //       })}
+  //     </Box>
+  //   );
+  // };
 
-    return (
-      <Item
-        item={item}
-        onPress={() => {
-          setSelectedSkuId(item?.sku);
-          setSelectedVariantIndex(index);
-        }}
-        backgroundColor={backgroundColor}
-        textColor={color}
-        index={index}
-      />
-    );
-  };
+  // const renderChildFlatlist = ({ item }) => {
+  //   const borderColor = item?.value?.value === variantValue ? 'black' : 'black';
+  //   const selectedVariantStyle = {
+  //     borderColor: borderColor,
+  //     borderWidth: 2,
+  //     borderRadius: 5,
+  //   };
+  //   return (
+  //     <TouchableOpacity onPress={() => setSelectedVariants(item?.value?.value)}>
+  //       <Box
+  //         marginRight="s10"
+  //         style={[
+  //           styles.item,
+  //           item?.value?.value === variantValue ? selectedVariantStyle : '',
+  //         ]}
+  //         alignItems="center"
+  //         justifyContent="center"
+  //       >
+  //         <Text>{item?.value?.value}</Text>
+  //       </Box>
+  //     </TouchableOpacity>
+  //   );
+  // };
 
   return (
     <>
@@ -205,12 +259,6 @@ const ProductDetailsScreen = props => {
             >
               {!productDetails?.error && imageCarousel && !isLoading ? (
                 <Box style={styles.productDetails}>
-                  {/* <Image
-                  style={styles.backImage}
-                  source={{
-                    uri: productImage,
-                  }}
-                /> */}
                   <CarouselCards images={imageCarousel} crosSelling={null} />
                   <Box>
                     <Text variant="bold24">{productName}</Text>
@@ -234,21 +282,19 @@ const ProductDetailsScreen = props => {
                           <Text variant="bold16" mt="s8">
                             Choose Variation :{' '}
                           </Text>
-                          <Box style={{ flex: 1 }}>
-                            <FlatList
-                              data={productDetails?.skus}
+                          {/* <FlatList
+                              data={productDetails?.variationValues}
                               renderItem={renderItem}
                               keyExtractor={(item, index) => index.toString()}
                               contentContainerStyle={{
-                                flexDirection: 'row',
+                                flexDirection: 'column',
                                 flexBasis: 1,
-                                justifyContent: 'space-between',
                                 paddingHorizontal: 4,
-                                flexWrap: 'wrap',
                               }}
-                              // numColumns={3}
-                            />
-                          </Box>
+                            /> */}
+                          <ProductVariants
+                            variants={productDetails?.variationValues}
+                          />
                         </Box>
                       )}
                     </Box>
@@ -285,7 +331,7 @@ const styles = StyleSheet.create({
   },
   productList: {
     flexDirection: 'row', // Horizontal layout
-    flexWrap: 'wrap',
+    // flexWrap: 'wrap',
   },
 
   backImage: {
@@ -299,7 +345,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    width: 100,
+    width: 80,
   },
   title: {
     fontSize: 14,

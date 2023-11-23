@@ -5,6 +5,7 @@ import { ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { api } from '@/api/SecureAPI';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
+import config from '@/config';
 
 const CartItemQuantity = ({ cartItem, customerCartId, removeItemTrigger }) => {
   const [isloading, setIsLoading] = useState(false);
@@ -19,12 +20,14 @@ const CartItemQuantity = ({ cartItem, customerCartId, removeItemTrigger }) => {
       indexId: indexId,
     };
     const resp = await api.patch(
-      `sfcc/updateItem/${customerCartId}`,
+      `${config.cartUrl}updateItemCart/${customerCartId}`,
       JSON.stringify(reqBody),
     );
     const response = resp.data;
     if (response) {
-      dispatch(getCustomerCartItems(`sfcc/cartDetail/${customerCartId}`))
+      dispatch(
+        getCustomerCartItems(`${config.cartUrl}cartDetail/${customerCartId}`),
+      )
         .then(res => {
           if (res.payload.status === 200) {
             console.log('carts api call successful');

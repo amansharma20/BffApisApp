@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { applicationProperties } from '../utils/application.properties';
+import config from '@/config';
 
 const get = async (endPoint, data) => {
   try {
@@ -34,14 +35,10 @@ const get = async (endPoint, data) => {
 const post = async (endPoint, data, headers) => {
   try {
     let axs = axios.create({ withCredentials: true });
-    let response = await axs.post(
-      applicationProperties.baseUrl + endPoint,
-      data,
-      {
-        headers: headers,
-        validateStatus: () => true,
-      },
-    );
+    let response = await axs.post(config.baseUrl + endPoint, data, {
+      headers: headers,
+      validateStatus: () => true,
+    });
 
     if (response.data !== undefined && response.data.status) {
       return {

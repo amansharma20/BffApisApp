@@ -7,6 +7,7 @@ import CartItemQuantity from './CartItemQuantity';
 import { RemoveIcon } from '@/assets/svgs';
 import { api } from '@/api/SecureAPI';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
+import config from '@/config';
 const CartItem = ({ item }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +21,14 @@ const CartItem = ({ item }) => {
   const removeItem = async itemId => {
     setIsLoading(true);
     const response = await api
-      .Delete(`sfcc/removeItem/${customerCartId}/items/${itemId}`)
+      .Delete(`${config.cartUrl}removeItem/${customerCartId}/items/${itemId}`)
       .then(res => {
         if (res?.data?.status == 204) {
-          dispatch(getCustomerCartItems(`sfcc/cartDetail/${customerCartId}`))
+          dispatch(
+            getCustomerCartItems(
+              `${config.cartUrl}cartDetail/${customerCartId}`,
+            ),
+          )
             .then(res => {
               if (res.payload.status === 200) {
                 setIsLoading(false);

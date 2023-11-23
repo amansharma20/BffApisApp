@@ -49,7 +49,7 @@ const environments = {
     baseUrl: 'https://catalogue-mobile.up.railway.app/',
     cartUrl: 'https://cart-mobile.up.railway.app/',
     productsDetailsById: 'product-by-id',
-    addToCart: 'addItem',
+    addToCart: 'addItemCart',
     collections: {
       newArrivals: 'new-arrivals',
       bestSelling: 'best-selling-products',

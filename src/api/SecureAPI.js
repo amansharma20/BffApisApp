@@ -120,6 +120,7 @@ const post = async (endPoint, data, loading) => {
 };
 
 const postWithEndpoint = async (endPoint, data, loading) => {
+  console.log('endPoint: ', endPoint);
   let userToken = await Keychain.getGenericPassword();
   let token = userToken.password;
   if (loading) {
@@ -252,19 +253,15 @@ const patch = async (endPoint, data, loading) => {
     console.log('loading: ', loading);
   }
   try {
-    let response = await axios.patch(
-      applicationProperties.baseUrl + endPoint,
-      data,
-      {
-        headers: {
-          token: token,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        validateStatus: () => true,
-        withCredentials: true,
+    let response = await axios.patch(endPoint, data, {
+      headers: {
+        token: token,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-    );
+      validateStatus: () => true,
+      withCredentials: true,
+    });
 
     if (response.data !== undefined && response.data.status) {
       return {

@@ -5,7 +5,8 @@ export const getCustomerBasketApi = createAsyncThunk(
   'basketApi',
   async (endpoint: string) => {
     try {
-      const response = await api.get(endpoint);
+      const response = await api.getWithEndpoint(endpoint);
+      console.log('response: ', response?.data);
       return response.data;
     } catch (error) {
       return error;

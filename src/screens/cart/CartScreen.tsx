@@ -17,10 +17,10 @@ import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import CartItem from './CartItem';
 import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton';
 import { customerId } from '@/utils/appUtils';
-
 import { storage } from '@/store';
 import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
 import { useAuthRoute } from '@/hooks/useAuthRoute';
+import config from '@/config';
 const CartScreen = () => {
   const navigation = useNavigation();
   const { getAuthRoute } = useAuthRoute();
@@ -44,17 +44,17 @@ const CartScreen = () => {
   };
 
   useEffect(() => {
-    dispatch(getCustomerCartItems(`sfcc/cartDetail/${customerCartId}`)).then(
-      res => {
-        if (res.payload.status === 200) {
-          console.log('carts api call successful');
-          setIsLoading(false);
-        } else {
-          setIsLoading(false);
-          console.log('carts api call not successful');
-        }
-      },
-    );
+    dispatch(
+      getCustomerCartItems(`${config.cartUrl}cartDetail/${customerCartId}`),
+    ).then(res => {
+      if (res.payload.status === 200) {
+        console.log('carts api call successful');
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        console.log('carts api call not successful');
+      }
+    });
   }, []);
 
   const ListEmptyComponent = () => {

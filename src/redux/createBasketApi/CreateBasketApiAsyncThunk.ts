@@ -6,6 +6,7 @@ export const createCustomerBasket = createAsyncThunk(
   async (endpoint: string) => {
     try {
       const response = await api.postWithEndpoint(endpoint);
+      console.log('response: ', response);
       return response.data;
     } catch (error) {
       return error;
