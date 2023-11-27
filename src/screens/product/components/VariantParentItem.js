@@ -43,25 +43,30 @@ const VariantParentItem = ({ item, setSelectedVariants }) => {
 
     return (
       <Box flex={1} key={key}>
-        <Text>{key}</Text>
-        <FlatList
-          data={newArray}
-          keyExtractor={(item, index) => `${item.id || index}`}
-          contentContainerStyle={{
-            flexDirection: 'row',
-            flexBasis: 1,
-            justifyContent: 'space-between',
-            paddingHorizontal: 4,
-          }}
-          numColumns={4}
-          renderItem={({ item }) => (
-            <VariantChildItem
-              item={item}
-              setNewArray={setNewArray}
-              newArray={newArray}
-            />
-          )}
-        />
+        <Box marginTop="s8">
+          <Text variant="regular14LightBlack">
+            {key.toString().toUpperCase()} :
+          </Text>
+          <FlatList
+            data={newArray}
+            keyExtractor={(item, index) => `${item.id || index}`}
+            contentContainerStyle={{
+              flexDirection: 'row',
+              flexBasis: 1,
+              justifyContent: 'space-between',
+              paddingHorizontal: 4,
+            }}
+            numColumns={4}
+            renderItem={({ item }) => (
+              <VariantChildItem
+                item={item}
+                setNewArray={setNewArray}
+                newArray={newArray}
+              />
+            )}
+            scrollEnabled={false}
+          />
+        </Box>
       </Box>
     );
   }

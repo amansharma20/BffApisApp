@@ -211,11 +211,14 @@ const ProductDetailsScreen = props => {
           <ProductDetailsShimmer />
         ) : (
           <>
-            <View
+            <ScrollView
               showsVerticalScrollIndicator={false}
               style={{
                 paddingHorizontal: theme.spacing.paddingHorizontal,
                 flex: 1,
+              }}
+              contentContainerStyle={{
+                paddingBottom: 100,
               }}
             >
               {!productDetails?.error && imageCarousel && !isLoading ? (
@@ -254,7 +257,7 @@ const ProductDetailsScreen = props => {
               ) : (
                 <Text>Product is not available</Text>
               )}
-            </View>
+            </ScrollView>
             <Box
               padding="s16"
               backgroundColor="white"
