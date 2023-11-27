@@ -36,9 +36,9 @@ const CheckoutScreen = props => {
   const [flag, setFlag] = useState(false);
   const dispatch = useDispatch();
   const ADDRESSES_DATA = useSelector(
-    state =>
-      state?.getCustomerDetailsApiSlice?.customerDetails?.data?.userProfile,
+    state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
+
   const shippmentMethods = useSelector(
     state =>
       state?.getShippmentMethodsApiSlice?.shippmentMethods?.data
@@ -49,7 +49,9 @@ const CheckoutScreen = props => {
     const fetchShippmentMethods = async () => {
       setIsLoading(true);
       await dispatch(
-        getShippmentMethods(`sfcc/shipping_method/${basketId}/me`),
+        getShippmentMethods(
+          `${config.checkoutUrl}sfcc/shipping_method/${basketId}/me`,
+        ),
       ).then(() => {
         setFlag(true);
       });
@@ -81,16 +83,16 @@ const CheckoutScreen = props => {
       };
 
       if (shippmentMethods?.length > 0 && flag === true) {
-        const response = await api.put(
-          `sfcc/new_shippment_method/${basketId}?shipment_id=me`,
+        const response = await api.putWithEndPoint(
+          `${config.checkoutUrl}sfcc/new_shippment_method/${basketId}?shipment_id=me`,
           reqBodyShippment,
         );
-        const shippment_address = await api.put(
-          `sfcc/new_shipping_address/${basketId}?shipment_id=me`,
+        const shippment_address = await api.putWithEndPoint(
+          `${config.checkoutUrl}sfcc/new_shipping_address/${basketId}?shipment_id=me`,
           reqBody,
         );
-        const billingAddress = await api.put(
-          `sfcc/new_billing_address/${basketId}`,
+        const billingAddress = await api.putWithEndPoint(
+          `${config.checkoutUrl}sfcc/new_billing_address/${basketId}`,
           reqBody,
         );
         setCheckoutDetails(billingAddress?.data?.data);
@@ -112,8 +114,8 @@ const CheckoutScreen = props => {
           amount: billingAddress?.data?.data?.amount,
           payment_method_id: 'CREDIT_CARD',
         };
-        const confirmPayment = await api.post(
-          `sfcc/confirmPayment/${basketId}`,
+        const confirmPayment = await api.postWithEndpoint(
+          `${config.checkoutUrl}sfcc/confirmPayment/${basketId}`,
           reqBodyPayment,
         );
         setOrderSummaryLoading(false);
@@ -128,11 +130,20 @@ const CheckoutScreen = props => {
       const reqBody = {
         basket_id: basketId,
       };
-      const confirmOrder = await api.post(`sfcc/placeOrder`, reqBody);
+      const confirmOrder = await api.postWithEndpoint(
+        `${config.checkoutUrl}sfcc/placeOrder`,
+        reqBody,
+      );
       if (confirmOrder?.data?.status === 200) {
         dispatch(createCustomerBasket(`${config.createCartUrl}`));
-        dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
-        dispatch(getCustomerCartItems(`sfcc/cartDetail/${basketId}`));
+        dispatch(
+          getCustomerBasketApi(
+            `${config.cartUrl}getCustomerCart/${customerId}`,
+          ),
+        );
+        dispatch(
+          getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
+        );
         Alert.alert('Order Placed', 'Your order is placed successfully');
         navigation.replace('OrdersScreen');
       }

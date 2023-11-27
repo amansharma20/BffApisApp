@@ -21,17 +21,13 @@ const HomeScreen = () => {
   const [isLoadingNewArival, setIsloadingNewArrival] = useState(false);
   const [isLoadingBestSelling, setIsLoadingBestSelling] = useState(false);
   const { isUserLoggedIn } = useIsUserLoggedIn();
-  console.log('isUserLoggedIn: ', isUserLoggedIn);
   const customerIdFromStorage = storage.getString('customerId');
-  console.log('customerIdFromStorage: ', customerIdFromStorage);
 
   const [customerId, setCustomerId] = useState(customerIdFromStorage);
-  console.log('customerId: ', customerId);
 
   const customerBasket = useAppSelector(
     state => state.getCustomerBasketApiSlice?.customerBasket?.data,
   );
-  console.log('customerBasket: ', customerBasket);
 
   useEffect(() => {
     const listener = storage.addOnValueChangedListener(changedKey => {
@@ -50,8 +46,10 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (customerId) {
-      dispatch(getCustomerBasketApi(`${ENV}/getCustomerCart/${customerId}`));
-      dispatch(getCustomerDetails(`${ENV}/user-details/${customerId}`));
+      dispatch(
+        getCustomerBasketApi(`${config.cartUrl}getCustomerCart/${customerId}`),
+      );
+      dispatch(getCustomerDetails(`${config.cartUrl}userDetail/${customerId}`));
     }
     dispatch(
       createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),

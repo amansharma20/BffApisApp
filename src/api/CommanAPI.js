@@ -1,15 +1,12 @@
 import axios from 'axios';
 import { applicationProperties } from '../utils/application.properties';
+import config from '@/config';
 
 const get = async (endPoint, data) => {
   try {
-    let response = await axios.get(
-      applicationProperties.baseUrl + endPoint,
-      data,
-      {
-        headers: {},
-      },
-    );
+    let response = await axios.get(config.baseUrl + endPoint, data, {
+      headers: {},
+    });
     if (response.data !== undefined && response.data.status) {
       return {
         success: true,
@@ -34,14 +31,10 @@ const get = async (endPoint, data) => {
 const post = async (endPoint, data, headers) => {
   try {
     let axs = axios.create({ withCredentials: true });
-    let response = await axs.post(
-      applicationProperties.baseUrl + endPoint,
-      data,
-      {
-        headers: headers,
-        validateStatus: () => true,
-      },
-    );
+    let response = await axs.post(endPoint, data, {
+      headers: headers,
+      validateStatus: () => true,
+    });
 
     if (response.data !== undefined && response.data.status) {
       return {

@@ -66,7 +66,6 @@ const ProductDetailsScreen = props => {
 
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
-
     if (isUserLoggedIn && basketId) {
       const addToCart = async () => {
         Toast.show({
@@ -74,9 +73,8 @@ const ProductDetailsScreen = props => {
           text1: 'This is an info message',
         });
         userToken = await Keychain.getGenericPassword();
-
         let response = await axios.post(
-          applicationProperties.baseUrl + `${config.addToCartUrl}/${basketId}`,
+          config.cartUrl + `${config.addToCartUrl}/${basketId}`,
           {
             itemId: selectedSkuId,
             quantity: 1,
@@ -89,26 +87,25 @@ const ProductDetailsScreen = props => {
             withCredentials: true,
           },
         );
-
         if (response?.status == 401) {
           setIsLoadingAddToCart(false);
           Alert.alert('Unauthorize', 'Your session is expired , Please login!');
           navigation.navigate('LoginScreen');
-        } else if (response.status == 201) {
+        } else if (response.status == 201 || response.status == 200) {
           setIsLoadingAddToCart(false);
-          dispatch(getCustomerCartItems(`sfcc/cartDetail/${basketId}`)).then(
-            res => {
-              if (res.payload.status === 200) {
-                console.log('carts api call successful');
-                setIsLoadingAddToCart(false);
-                setIsLoading(false);
-              } else {
-                setIsLoading(false);
-                setIsLoadingAddToCart(false);
-                console.log('carts api call not successful');
-              }
-            },
-          );
+          dispatch(
+            getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
+          ).then(res => {
+            if (res.payload.status === 200) {
+              console.log('carts api call successful');
+              setIsLoadingAddToCart(false);
+              setIsLoading(false);
+            } else {
+              setIsLoading(false);
+              setIsLoadingAddToCart(false);
+              console.log('carts api call not successful');
+            }
+          });
           Alert.alert('Product Added to cart');
         } else {
           setIsLoadingAddToCart(false);
@@ -119,7 +116,14 @@ const ProductDetailsScreen = props => {
     } else {
       setIsLoadingAddToCart(false);
       setIsLoading(false);
-      Alert.alert('basket Id is not specified');
+      // Alert.alert('basket Id is not specified');
+      Alert.alert('Unauthorized', 'Please login first', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => navigation.navigate('LoginScreen') },
+      ]);
     }
   };
 

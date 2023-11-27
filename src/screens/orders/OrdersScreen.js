@@ -16,12 +16,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import OrderItem from './components/OrderItem';
 import { storage } from '@/store';
 import OrderListShimmer from '@/components/shimmers/OrderListShimmer';
+import config from '@/config';
 const OrderScreen = () => {
   const customerIdFromStorage = storage.getString('customerId');
   const [customerId, setCustomerId] = useState(customerIdFromStorage);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const customerOrders = useSelector(
     state => state?.getOrdersDataApiSlice?.ordersData?.data || [],
@@ -42,20 +43,20 @@ const OrderScreen = () => {
             <Text fontSize={14} fontWeight="dark">
               Order Id:
             </Text>
-            <Text paddingLeft="s4">{item?.order_no}</Text>
+            <Text paddingLeft="s4">{item?.id}</Text>
           </Box>
-          <Box mb="s2" mt="s12">
+          {/* <Box mb="s2" mt="s12">
             <Text fontSize={14}>
               Status:{' '}
               {item?.payment_status == 'not_paid' ? 'PENDING' : 'FULFILLED'}
             </Text>
-          </Box>
+          </Box> */}
           <Box mt="s20">
             <Text variant="bold14" mb="s10">
               Items in your order
             </Text>
             <FlatList
-              data={item?.product_items}
+              data={item?.items}
               renderItem={item => {
                 const data = item?.item;
                 return <OrderItem item={data} />;
@@ -65,10 +66,11 @@ const OrderScreen = () => {
           </Box>
           <Box mb="s2" mt="s12">
             <Text fontSize={14}>
-              {item?.payment_status == 'not_paid'
+              {/* {item?.payment_status == 'not_paid'
                 ? 'Amount to be paid'
                 : 'Amount paid'}
-              {'  '}${item?.order_total}
+              {'  '}${item?.order_total} */}
+              Amount paid : ${item?.attributes?.totals?.grandTotal}
             </Text>
           </Box>
           <Box mb="s2" mt="s12" flexDirection="row">
@@ -102,7 +104,7 @@ const OrderScreen = () => {
   };
   useEffect(() => {
     setIsLoading(true);
-    dispatch(getOrdersData(`sfcc/order-Details/${customerId}/orders`))
+    dispatch(getOrdersData(`${config.cartUrl}orderDetail/${customerId}`))
       .then(res => {
         setIsLoading(false);
       })
@@ -128,7 +130,7 @@ const OrderScreen = () => {
             <FlatList
               data={customerOrders}
               renderItem={renderItem}
-              keyExtractor={item => item.order_no}
+              keyExtractor={item => item.id}
             />
           )}
         </Box>

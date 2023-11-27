@@ -30,6 +30,7 @@ const CollectionsScreen = () => {
   const categories = useSelector(
     state => state?.getCollectionsApiSlice?.collections?.data,
   );
+
   const firstItem = categories?.[0]?.Id || null;
 
   useEffect(() => {

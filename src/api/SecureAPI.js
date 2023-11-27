@@ -18,7 +18,6 @@ const get = async (endPoint, data, loading) => {
       validateStatus: () => true,
       withCredentials: true,
     });
-
     if (response.data !== undefined && response.data.status) {
       return {
         success: true,
@@ -43,6 +42,7 @@ const get = async (endPoint, data, loading) => {
 };
 
 const getWithEndpoint = async (endPoint, data, loading) => {
+  console.log('endPoint: ', endPoint);
   let userToken = await Keychain.getGenericPassword();
   let token = userToken.password;
   if (loading) {
@@ -245,6 +245,44 @@ const put = async (endPoint, data, loading) => {
   }
 };
 
+const putWithEndPoint = async (endPoint, data, loading) => {
+  let userToken = await Keychain.getGenericPassword();
+  let token = userToken.password;
+  if (loading) {
+    console.log('loading: ', loading);
+  }
+  try {
+    let response = await axios.put(endPoint, data, {
+      headers: {
+        token: token,
+      },
+      validateStatus: () => true,
+      withCredentials: true,
+    });
+
+    if (response.data !== undefined && response.data.status) {
+      return {
+        success: true,
+        data: response,
+      };
+    } else {
+      return {
+        success: false,
+        data: response,
+      };
+    }
+  } catch (e) {
+    return {
+      success: false,
+      data: e,
+    };
+  } finally {
+    if (loading) {
+      console.log('loading: ', loading);
+    }
+  }
+};
+
 const patch = async (endPoint, data, loading) => {
   let userToken = await Keychain.getGenericPassword();
   let token = userToken.password;
@@ -297,4 +335,5 @@ export const api = {
   put,
   Delete,
   patch,
+  putWithEndPoint,
 };

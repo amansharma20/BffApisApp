@@ -17,8 +17,7 @@ const AddressScreen = () => {
   const navigation = useNavigation();
 
   const userAddresses = useSelector(
-    state =>
-      state?.getCustomerDetailsApiSlice?.customerDetails?.data?.userProfile,
+    state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
 
   return (

@@ -42,17 +42,17 @@ export default function ProfileScreen() {
   const baseUrl = config.baseUrl;
 
   const userDetails = useSelector(
-    state =>
-      state?.getCustomerDetailsApiSlice?.customerDetails?.data?.userProfile,
+    state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
+  console.log('userDetails: ', userDetails);
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(getCustomerDetails(`${ENV}/user-details/${customerId}`)).then(
-      () => {
-        setIsLoading(false);
-      },
-    );
+    dispatch(
+      getCustomerDetails(`${config.cartUrl}userDetail/${customerId}`),
+    ).then(() => {
+      setIsLoading(false);
+    });
   }, [customerId]);
 
   const dataArray = [

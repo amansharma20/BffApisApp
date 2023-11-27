@@ -37,7 +37,7 @@ export default function LoginScreen(props) {
       email: userEmail,
       password: password,
     };
-    const response = await commonApi.post(config.loginUrl, apiData, {
+    const response = await commonApi.post(config.loginUrl + 'login', apiData, {
       'Content-Type': 'Application/json',
     });
 
