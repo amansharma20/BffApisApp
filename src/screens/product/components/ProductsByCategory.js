@@ -32,7 +32,6 @@ const ProductsByCategory = props => {
       state?.getProductsByCategoryApiSlice?.productsByCategory?.data
         ?.productData,
   );
-  console.log('productsByCategory: ', productsByCategory);
 
   useEffect(() => {
     setIsLoading(true);

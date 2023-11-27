@@ -9,8 +9,9 @@ import { CarouselCrossSellingProducts } from './CarouselCrossSellingProducts';
 const CarouselCards = ({ images, crosSelling }) => {
   const [index, setIndex] = React.useState(0);
   const isCarousel = React.useRef(null);
+
   return (
-    <Box alignItems="center">
+    <Box alignItems="center" height={350}>
       <Carousel
         // layout="tinder"
         // layoutCardOffset={9}

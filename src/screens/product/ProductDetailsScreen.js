@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -8,6 +9,7 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
+  View,
 } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 import * as Keychain from 'react-native-keychain';
@@ -28,17 +30,86 @@ import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
 import ProductVariants from './components/ProductVariants';
 
 const ProductDetailsScreen = props => {
-  const customerId = storage.getString('customerId');
-  const { width } = useWindowDimensions();
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [variantValue, setSelectedVariants] = useState([]);
-  const [customerSelectedVariants, setCustomerSelectedVariants] = useState([]);
 
   const productDetails = useSelector(
     state => state?.getProductDetailsApiSlice?.productDetails?.data,
   );
+
+  const variants = productDetails?.variationValues;
+
+  const [selectedVariants, setSelectedVariants] = useState();
+  console.log(
+    '🚀 ~ file: ProductDetailsScreen.js:44 ~ ProductDetailsScreen ~ selectedVariants:',
+    selectedVariants,
+  );
+
+  const [data, setData] = useState([]);
+
+  const pushUniqueData = newItem => {
+    setData(prevData => {
+      const index = prevData?.findIndex(item => item?.key === newItem?.key);
+
+      if (index !== -1) {
+        // If key already exists, update the value
+        return [
+          ...prevData?.slice(0, index),
+          newItem,
+          ...prevData?.slice(index + 1),
+        ];
+      } else {
+        // If key doesn't exist, add a new key-value pair
+        return [...prevData, newItem];
+      }
+    });
+  };
+
+  useEffect(() => {
+    pushUniqueData(selectedVariants);
+  }, [selectedVariants]);
+
+  const findMatchingSKU = (specifications, products) => {
+    const matchingProduct = products?.find(product => {
+      return (
+        product &&
+        product?.specifications &&
+        Object.keys(specifications).every(
+          key => product?.specifications?.[key] === specifications?.[key],
+        )
+      );
+    });
+
+    return matchingProduct ? matchingProduct?.sku : null;
+  };
+
+  const [selectedSku, setSelectedSku] = useState(null);
+  console.log(
+    '🚀 ~ file: ProductDetailsScreen.js:92 ~ ProductDetailsScreen ~ selectedSku:',
+    selectedSku,
+  );
+
+  useEffect(() => {
+    // Filter out undefined elements and transform the array into the desired object
+    const filteredArray = data.filter(item => item !== undefined);
+    const transformedObject = filteredArray.reduce((result, item) => {
+      const { key, value } = item;
+      result[key] = value.value; // Assuming the desired value is in the 'value' property
+      return result;
+    }, {});
+    console.log(
+      '🚀 ~ file: ProductDetailsScreen.js:96 ~ transformedObject ~ transformedObject:',
+      transformedObject,
+    );
+
+    const matchingSKU = findMatchingSKU(
+      transformedObject,
+      productDetails?.skus,
+    );
+
+    setSelectedSku(matchingSKU);
+  }, [data]);
 
   const basketId = useSelector(
     state =>
@@ -58,30 +129,9 @@ const ProductDetailsScreen = props => {
 
   const [selectedSkuId, setSelectedSkuId] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
-  const [imageCarousel, setImageCarousel] = useState([]);
+  const imageCarousel = productDetails?.skus;
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
-  const [productImage, setProductImage] = useState('');
 
-  const onCustomerSelectedVariant = selectedVariant => {
-    const key = Object.keys(selectedVariant)[0];
-    const value = selectedVariant[key];
-    const index = customerSelectedVariants.findIndex(
-      item => Object.keys(item)[0] === key,
-    );
-    if (index !== -1) {
-      setCustomerSelectedVariants(prevVariants => {
-        const updatedVariants = [...prevVariants];
-        updatedVariants[index][key] = value;
-        return updatedVariants;
-      });
-    } else {
-      setCustomerSelectedVariants(prevVariants => [
-        ...prevVariants,
-        selectedVariant,
-      ]);
-    }
-  };
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
 
@@ -102,8 +152,6 @@ const ProductDetailsScreen = props => {
             withCredentials: true,
           },
         );
-        console.log('response: ', response?.data);
-        console.log('response: ', response?.status);
         if (response?.status == 401) {
           setIsLoadingAddToCart(false);
           Alert.alert('Unauthorize', 'Your session is expired , Please login!');
@@ -155,93 +203,6 @@ const ProductDetailsScreen = props => {
     });
   }, [productId]);
 
-  useEffect(() => {
-    if (
-      !productDetails?.error &&
-      productDetails?.skus &&
-      productDetails?.skus[selectedVariantIndex]
-    ) {
-      setProductImage(productDetails?.skus[selectedVariantIndex]?.image);
-      setSelectedSkuId(productDetails?.skus[selectedVariantIndex]?.sku);
-      setImageCarousel(productDetails?.skus);
-    }
-  }, [productDetails, selectedVariantIndex]);
-
-  const Item = ({ item, onPress, backgroundColor, textColor, index }) => {
-    const itemWidth = width / 4;
-
-    return (
-      <Box style={{ width: itemWidth }}>
-        <TouchableOpacity
-          onPress={() => {
-            setSelectedSkuId(item?.sku);
-            setProductImage(productDetails?.skus[index]?.image);
-          }}
-          style={[styles.item, { backgroundColor }]}
-        >
-          <Text style={[styles.title, { color: textColor }]}>{item?.sku}</Text>
-        </TouchableOpacity>
-      </Box>
-    );
-  };
-
-  // const renderItem = ({ item, index }) => {
-  //   console.log('item: ', item);
-  //   Object.keys(item).map(key => {
-  //     console.log('key: ', item?.[key]);
-  //   });
-  //   return (
-  //     <Box paddingVertical="s8">
-  //       {Object.keys(item).map(key => {
-  //         // console.log('item?.[key]: ', item?.[key]);
-  //         if (item?.[key]?.length == 1) {
-  //           setSelectedVariants(item);
-  //         }
-  //         return (
-  //           <>
-  //             <Text fontSize="16" key={key}>{`${key}`}</Text>
-  //             <FlatList
-  //               contentContainerStyle={{
-  //                 flexDirection: 'row',
-  //                 flexBasis: 1,
-  //                 justifyContent: 'space-between',
-  //                 paddingHorizontal: 4,
-  //               }}
-  //               numColumns={4}
-  //               data={item?.[key]}
-  //               renderItem={renderChildFlatlist}
-  //             />
-  //           </>
-  //         );
-  //       })}
-  //     </Box>
-  //   );
-  // };
-
-  // const renderChildFlatlist = ({ item }) => {
-  //   const borderColor = item?.value?.value === variantValue ? 'black' : 'black';
-  //   const selectedVariantStyle = {
-  //     borderColor: borderColor,
-  //     borderWidth: 2,
-  //     borderRadius: 5,
-  //   };
-  //   return (
-  //     <TouchableOpacity onPress={() => setSelectedVariants(item?.value?.value)}>
-  //       <Box
-  //         marginRight="s10"
-  //         style={[
-  //           styles.item,
-  //           item?.value?.value === variantValue ? selectedVariantStyle : '',
-  //         ]}
-  //         alignItems="center"
-  //         justifyContent="center"
-  //       >
-  //         <Text>{item?.value?.value}</Text>
-  //       </Box>
-  //     </TouchableOpacity>
-  //   );
-  // };
-
   return (
     <>
       <CommonHeader title={productName} searchIcon={true} showCartIcon={true} />
@@ -250,30 +211,28 @@ const ProductDetailsScreen = props => {
           <ProductDetailsShimmer />
         ) : (
           <>
-            <ScrollView
+            <View
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{
+              style={{
                 paddingHorizontal: theme.spacing.paddingHorizontal,
-                flexGrow: 1,
+                flex: 1,
               }}
             >
               {!productDetails?.error && imageCarousel && !isLoading ? (
-                <Box style={styles.productDetails}>
+                <Box flex={1}>
                   <CarouselCards images={imageCarousel} crosSelling={null} />
-                  <Box>
+                  <Box flex={1}>
                     <Text variant="bold24">{productName}</Text>
                     <Text variant="bold16" mt="s6">
                       ${productDetails?.skus?.[0]?.bestPrice}
                     </Text>
                     <Box mt="s6">
-                      {productDetails?.skus?.[0]?.available ? (
+                      {selectedSku ? (
                         <Text variant="bold16" color="green">
                           Available
                         </Text>
                       ) : (
-                        <Text variant="regular18" color="red">
-                          Not Available
-                        </Text>
+                        <Text variant="bold16">Not Available</Text>
                       )}
                     </Box>
                     <Box flex={1}>
@@ -282,30 +241,20 @@ const ProductDetailsScreen = props => {
                           <Text variant="bold16" mt="s8">
                             Choose Variation :{' '}
                           </Text>
-                          {/* <FlatList
-                              data={productDetails?.variationValues}
-                              renderItem={renderItem}
-                              keyExtractor={(item, index) => index.toString()}
-                              contentContainerStyle={{
-                                flexDirection: 'column',
-                                flexBasis: 1,
-                                paddingHorizontal: 4,
-                              }}
-                            /> */}
                           <ProductVariants
-                            variants={productDetails?.variationValues}
+                            variants={variants}
+                            selectedVariants={selectedVariants}
+                            setSelectedVariants={setSelectedVariants}
                           />
                         </Box>
                       )}
                     </Box>
                   </Box>
-                  <Text mt="s6" variant="regular16"></Text>
                 </Box>
               ) : (
                 <Text>Product is not available</Text>
               )}
-              <Box></Box>
-            </ScrollView>
+            </View>
             <Box
               padding="s16"
               backgroundColor="white"
@@ -314,7 +263,7 @@ const ProductDetailsScreen = props => {
               <CommonSolidButton
                 title={!isLoadingAddToCart ? 'Add to Cart' : 'Loading...'}
                 onPress={!isLoadingAddToCart ? onPressAddToCart : () => {}}
-                disabled={!productDetails?.skus?.[0]?.available}
+                disabled={selectedSku === null ? true : false}
               />
             </Box>
           </>
