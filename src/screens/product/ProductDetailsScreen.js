@@ -127,7 +127,6 @@ const ProductDetailsScreen = props => {
     props?.route?.params?.item?.ProductName ||
     props?.route?.params?.item?.productName;
 
-  const [selectedSkuId, setSelectedSkuId] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const imageCarousel = productDetails?.skus;
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
@@ -140,7 +139,7 @@ const ProductDetailsScreen = props => {
         let response = await axios.post(
           config.cartUrl + `${config.addToCartUrl}/${basketId}`,
           {
-            itemId: selectedSkuId,
+            itemId: selectedSku,
             quantity: 1,
           },
           {
@@ -155,7 +154,7 @@ const ProductDetailsScreen = props => {
           setIsLoadingAddToCart(false);
           Alert.alert('Unauthorize', 'Your session is expired , Please login!');
           navigation.navigate('LoginScreen');
-        } else if (response.status == 201 || response.status == 200) {
+        } else if (response.status === 201 || response.status === 200) {
           setIsLoadingAddToCart(false);
           dispatch(
             getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
