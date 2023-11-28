@@ -25,7 +25,7 @@ const CommonSearchHeader = () => {
         <TouchableOpacity
           style={{ flex: 1, height: 32 }}
           onPress={() => {
-            navigation.navigate('SearchScreen');
+            navigation.navigate('SearchScreenAlgolia');
           }}
         >
           <Box
