@@ -134,7 +134,6 @@ const ProductDetailsScreen = props => {
 
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
-
     if (isUserLoggedIn && basketId) {
       const addToCart = async () => {
         userToken = await Keychain.getGenericPassword();
@@ -156,12 +155,11 @@ const ProductDetailsScreen = props => {
           setIsLoadingAddToCart(false);
           Alert.alert('Unauthorize', 'Your session is expired , Please login!');
           navigation.navigate('LoginScreen');
-        } else if (response.status == 200) {
+        } else if (response.status == 201 || response.status == 200) {
           setIsLoadingAddToCart(false);
           dispatch(
             getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
           ).then(res => {
-            console.log('res.payload.status: ', res.payload.status);
             if (res.payload.status === 200) {
               console.log('carts api call successful');
               setIsLoadingAddToCart(false);
@@ -183,7 +181,14 @@ const ProductDetailsScreen = props => {
     } else {
       setIsLoadingAddToCart(false);
       setIsLoading(false);
-      Alert.alert('basket Id is not specified');
+      // Alert.alert('basket Id is not specified');
+      Alert.alert('Unauthorized', 'Please login first', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => navigation.navigate('LoginScreen') },
+      ]);
     }
   };
 

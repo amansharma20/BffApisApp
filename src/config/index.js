@@ -48,6 +48,8 @@ const environments = {
   nx: {
     baseUrl: 'https://catalogue-mobile.up.railway.app/',
     cartUrl: 'https://cart-mobile.up.railway.app/',
+    loginUrl: 'https://ecomm-dev-login.up.railway.app/',
+    checkoutUrl: 'https://ecomm-dev-checkout.up.railway.app/',
     productsDetailsById: 'product-by-id',
     addToCart: 'addItemCart',
     collections: {
@@ -71,6 +73,7 @@ export default {
   },
   baseUrl: environments[ENV].baseUrl,
   cartUrl: environments[ENV].cartUrl,
+  checkoutUrl: environments[ENV].checkoutUrl,
   collections: {
     newArrivals: environments[ENV].collections.newArrivals,
     bestSelling: environments[ENV].collections.bestSelling,
@@ -81,5 +84,5 @@ export default {
   productsByCategoryUrl: environments[ENV].productsByCategory,
   productsBySubCategoryUrl: environments[ENV].productsBySubCategory,
   createCartUrl: environments[ENV].createCart,
-  loginUrl: environments[ENV].login,
+  loginUrl: environments[ENV].loginUrl,
 };

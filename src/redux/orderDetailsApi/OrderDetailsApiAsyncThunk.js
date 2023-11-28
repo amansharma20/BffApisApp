@@ -1,11 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '@/api/SecureAPI';
-
-export const getCustomerDetails = createAsyncThunk(
-  'customerDetails',
-  async (endpoint: string) => {
+export const getOrderDetailsAsyncThunk = createAsyncThunk(
+  'ordersDetailsById',
+  async (endpoint, thunkAPI) => {
     try {
-      const response = await api.getWithEndpoint(endpoint);
+      const response = await api.getWithEndpoint(endpoint, thunkAPI);
       return response.data;
     } catch (error) {
       return error;

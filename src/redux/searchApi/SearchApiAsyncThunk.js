@@ -4,7 +4,7 @@ export const searchProducts = createAsyncThunk(
   'searchProducts',
   async (endpoint, thunkAPI) => {
     try {
-      const response = await api.get(endpoint, thunkAPI);
+      const response = await api.getWithEndpoint(endpoint, thunkAPI);
       return response.data;
     } catch (error) {
       return error;

@@ -50,14 +50,8 @@ const HomeScreen = () => {
     if (customerId) {
       dispatch(
         getCustomerBasketApi(`${config.cartUrl}getCustomerCart/${customerId}`),
-      ).then(res => {
-        if (res?.payload?.data?.baskets[0].basket_id == '') {
-          dispatch(createCustomerBasket(`${config.cartUrl}createCart`));
-        }
-      });
-      dispatch(
-        getCustomerDetails(`${config.baseUrl}/user-details/${customerId}`),
       );
+      dispatch(getCustomerDetails(`${config.cartUrl}userDetail/${customerId}`));
     }
     dispatch(
       createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),

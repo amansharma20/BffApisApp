@@ -29,6 +29,7 @@ import getCustomerCartItemsAliSlice from '../redux/cartItemsApi/CartItemsSlice';
 import getOrdersDataApiSlice from '../redux/ordersApi/OrdersApiSlice';
 import getShippmentMethodsApiSlice from '../redux/shippmentMethodApi/ShippmentMethodApiSlice';
 import searchProductsApiSlice from '../redux/searchApi/SearchApiSlice';
+import getOrdersDetailsApiSlice from '../redux/orderDetailsApi/OrderDetailsApiSlice';
 const reducers = combineReducers({
   theme,
   createCustomerBasketSlice,
@@ -44,6 +45,7 @@ const reducers = combineReducers({
   getProductsBySubCategoryApiSlice,
   getOrdersDataApiSlice,
   getShippmentMethodsApiSlice,
+  getOrdersDetailsApiSlice,
   [api.reducerPath]: api.reducer,
 });
 

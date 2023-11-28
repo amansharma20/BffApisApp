@@ -45,7 +45,6 @@ const ProductsByCategory = props => {
 
   const renderItem = ({ item, index }) => (
     <>
-      {/* <ProductItem item={item} index={index} /> */}
       <ProductItem item={item} />
     </>
   );

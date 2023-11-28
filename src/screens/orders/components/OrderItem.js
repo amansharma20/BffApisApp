@@ -25,9 +25,9 @@ const OrderItem = ({ item }) => {
         </Box>
         <Box justifyContent="space-between">
           <Box width={'90%'}>
-            <Text variant="bold14">{item?.product_name}</Text>
+            <Text variant="bold14">{item?.productId}</Text>
             <Text variant="bold14" style={{ marginTop: 4 }}>
-              ${item?.price}
+              ${item?.priceTotal}
             </Text>
           </Box>
           <Box width={'90%'}>
