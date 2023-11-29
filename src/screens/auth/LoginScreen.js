@@ -20,6 +20,8 @@ import { reduxStorage } from '@/store';
 import { createCustomerBasket } from '@/redux/createBasketApi/CreateBasketApiAsyncThunk';
 import config from '@/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
+import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 
 export default function LoginScreen(props) {
   const dispatch = useDispatch();
@@ -53,6 +55,16 @@ export default function LoginScreen(props) {
       reduxStorage.setItem('customerId', customerId);
       await AsyncStorage.setItem('tokenExpiry', token);
       signIn(token);
+      dispatch(
+        getCustomerBasketApi(`${config.cartUrl}getCustomerCart/${customerId}`),
+      ).then(res => {
+        dispatch(
+          getCustomerCartItems(
+            `${config.cartUrl}cartDetail/${res?.payload?.data?.baskets?.[0]?.basket_id}`,
+          ),
+        );
+      });
+
       // dispatch(getCustomerBasketApi(`sfcc/getCustomerCart/${customerId}`));
       // dispatch(createCustomerBasket(`${config.cartUrl}createCart`));
     } else {
@@ -126,7 +138,6 @@ export default function LoginScreen(props) {
               onChangeText={text => {
                 setUserEmail(text);
               }}
-              autoCapitalize={false}
               keyboardType="email-address"
               placeholderTextColor={theme.colors.lightGrey}
             />
@@ -145,7 +156,6 @@ export default function LoginScreen(props) {
               onChangeText={text => {
                 setPassword(text);
               }}
-              autoCapitalize={false}
               placeholderTextColor={theme.colors.lightGrey}
             />
             <Box mt="s16">

@@ -129,7 +129,7 @@ function InfiniteHits({ hitComponent: Hit, ...props }) {
   const renderSubCategory = ({ item }) => {
     const data = item?.Id ? item : item?.children?.[0];
     return (
-      <Box padding="s18" style={{ backgroundColor: '#f5f5f5' }}>
+      <Box padding="s14" style={{ backgroundColor: '#f5f5f5' }}>
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('ProductsByCategory', {
@@ -173,7 +173,9 @@ function InfiniteHits({ hitComponent: Hit, ...props }) {
                     })
                   }
                 >
-                  <Hit hit={item} />
+                  <Box paddingBottom="s10">
+                    <Hit hit={item} />
+                  </Box>
                 </TouchableOpacity>
                 {item?.hasChildren ? (
                   <FlatList

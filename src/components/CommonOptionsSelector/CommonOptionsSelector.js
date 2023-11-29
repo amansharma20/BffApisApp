@@ -13,7 +13,6 @@ const CommonOptionsSelector = ({
   hideContinueButton,
 }) => {
   const [flatListArray, setFlatListArray] = useState([]);
-
   const Item = ({ item }) => {
     const onPressItem = () => {
       let newArr = [];

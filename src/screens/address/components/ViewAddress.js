@@ -8,6 +8,7 @@ import { getCustomerDetails } from '@/redux/profileApi/ProfileApiAsyncThunk';
 import { ActivityIndicator } from 'react-native';
 
 const ViewAddress = ({ userAddress }) => {
+  console.log('userAddress: ', userAddress);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const address = userAddress.item;

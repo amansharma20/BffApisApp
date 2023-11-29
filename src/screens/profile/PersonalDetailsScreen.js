@@ -10,10 +10,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
 import { customerId } from '@/utils/appUtils';
 import CommonTransparentButton from '@/components/CommonSolidButton/CommonTransparentButton';
+import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
+import config from '@/config';
+import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 
 const PersonalDetailsScreen = () => {
   const { signOut } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
+  const isUserLoggedIn = useIsUserLoggedIn();
   const dispatch = useDispatch();
 
   const userDetails = useSelector(
@@ -24,7 +28,11 @@ const PersonalDetailsScreen = () => {
   const onPressLogout = () => {
     signOut();
   };
-
+  useEffect(() => {
+    dispatch(
+      getCustomerBasketApi(`${config.cartUrl}getCustomerCart/${customerId}`),
+    );
+  }, [isUserLoggedIn]);
   return (
     <SafeAreaView style={styles.container}>
       <CommonHeader title={'Your Account'} />

@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { createCustomerBasket } from '@/redux/createBasketApi/CreateBasketApiAsyncThunk';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
-import { customerId } from '@/utils/appUtils';
+// import { customerId } from '@/utils/appUtils';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import CommonOptionsSelector from '@/components/CommonOptionsSelector/CommonOptionsSelector';
 import { getShippmentMethods } from '@/redux/shippmentMethodApi/ShippmentMethodApiAsyncThunk';
@@ -23,8 +23,12 @@ import HomeShimmers from '@/components/shimmers/HomeShimmers';
 import CheckoutShimmer from '@/components/shimmers/CheckoutShimmer';
 import OrderSummaryShimmer from '@/components/shimmers/OrderSummaryShimmer';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
+import { storage } from '@/store';
 const CheckoutScreen = props => {
   const navigation = useNavigation();
+  const customerIdFromStorage = storage.getString('customerId');
+  const [customerId, setCustomerId] = useState(customerIdFromStorage);
+
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const basketId = props.route.params?.basketId;
   const [checkoutDetails, setCheckoutDetails] = useState(null);
@@ -38,6 +42,7 @@ const CheckoutScreen = props => {
   const ADDRESSES_DATA = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
+  console.log('ADDRESSES_DATA: ', ADDRESSES_DATA);
 
   const shippmentMethods = useSelector(
     state =>
@@ -65,14 +70,15 @@ const CheckoutScreen = props => {
     const reqBody = {
       address1: 'Ocapi',
       address2: 'Demo',
-      city: ADDRESSES_DATA?.[selectedAddressIndex]?.city,
-      first_name: ADDRESSES_DATA?.[selectedAddressIndex]?.firstName,
+      city: ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.city,
+      first_name:
+        ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName,
       full_name:
-        ADDRESSES_DATA?.[selectedAddressIndex]?.firstName +
-        ADDRESSES_DATA?.[selectedAddressIndex]?.lastName,
-      id: ADDRESSES_DATA?.[selectedAddressIndex]?.addressNumber,
-      last_name: ADDRESSES_DATA?.[selectedAddressIndex]?.lastName,
-      phone: ADDRESSES_DATA?.[selectedAddressIndex]?.phone,
+        ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName +
+        ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.lastName,
+      id: ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.addressNumber,
+      last_name: ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.lastName,
+      phone: ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.phone,
       postal_code: '45200',
       state_code: '45200',
       title: 'OcapiDemo',
@@ -135,15 +141,22 @@ const CheckoutScreen = props => {
         reqBody,
       );
       if (confirmOrder?.data?.status === 200) {
-        dispatch(createCustomerBasket(`${config.createCartUrl}`));
         dispatch(
-          getCustomerBasketApi(
-            `${config.cartUrl}getCustomerCart/${customerId}`,
-          ),
-        );
-        dispatch(
-          getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
-        );
+          createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),
+        ).then(() => {
+          dispatch(
+            getCustomerBasketApi(
+              `${config.cartUrl}getCustomerCart/${customerId}`,
+            ),
+          ).then(res => {
+            dispatch(
+              getCustomerCartItems(
+                `${config.cartUrl}cartDetail/${res?.payload?.data?.baskets?.[0]?.basket_id}`,
+              ),
+            );
+          });
+        });
+
         Alert.alert('Order Placed', 'Your order is placed successfully');
         navigation.replace('OrdersScreen');
       }
@@ -167,7 +180,7 @@ const CheckoutScreen = props => {
                     Select address
                   </Text>
                   <CommonOptionsSelector
-                    DATA={ADDRESSES_DATA}
+                    DATA={ADDRESSES_DATA?.userProfile}
                     selectedIndex={selectedAddressIndex}
                     setSelectedIndex={setSelectedAddressIndex}
                     hideContinueButton

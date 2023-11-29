@@ -34,11 +34,11 @@ const CartScreen = () => {
       state?.getCustomerBasketApiSlice?.customerBasket?.data?.baskets?.[0]
         ?.basket_id,
   );
+  console.log('customerCartId: ', customerCartId);
 
   const customerCartItems = useSelector(
     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
   );
-
   const renderItem = () => {
     20;
   };

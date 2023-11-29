@@ -44,7 +44,7 @@ export default function ProfileScreen() {
   const userDetails = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
-  console.log('userDetails: ', userDetails);
+  // console.log('userDetails: ', userDetails?.userProfile);
 
   useEffect(() => {
     setIsLoading(true);
@@ -155,9 +155,9 @@ export default function ProfileScreen() {
                     flexDirection="column"
                   >
                     <Text variant="bold28">
-                      Hello {userDetails?.[0]?.firstName},
+                      Hello {userDetails?.userProfile?.[0]?.firstName},
                     </Text>
-                    <Text>{userDetails?.[0]?.email}</Text>
+                    <Text>{userDetails?.userProfile?.[0]?.email}</Text>
                   </Box>
                 )}
               </Box>
