@@ -17,7 +17,7 @@ const VariantParentItem = ({ item, setSelectedVariants }) => {
     useEffect(() => {
       const selectedObject = getSelectedObject(newArray);
       if (selectedObject) {
-        const wait = new Promise(resolve => setTimeout(resolve, 500));
+        const wait = new Promise(resolve => setTimeout(resolve, 0));
         wait.then(() => {
           setSelectedVariants(selectedObject);
         });

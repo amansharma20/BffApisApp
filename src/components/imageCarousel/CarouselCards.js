@@ -24,7 +24,7 @@ const CarouselCards = ({ images, crosSelling }) => {
         useScrollView={true}
       />
       <Pagination
-        dotsLength={images.length}
+        dotsLength={images?.length}
         activeDotIndex={index}
         carouselRef={isCarousel}
         dotStyle={{

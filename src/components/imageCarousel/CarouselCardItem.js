@@ -4,12 +4,13 @@ import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 export const SLIDER_WIDTH = Dimensions.get('window').width + 1;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 1);
 export const CarouselCardItem = ({ item, index }) => {
-  const imageUrl = Array.isArray(item?.image) ? item.image[0] : item.image;
+  // const imageUrl = Array.isArray(item?.image) ? item.image[0] : item.image;
   return (
     <Box style={styles.container} key={index}>
       <Image
         source={{
-          uri: imageUrl || item?.image || item?.images || item?.image?.[0],
+          // uri: imageUrl || item?.image || item?.images || item?.image?.[0],
+          uri: item,
         }}
         style={styles.image}
       />

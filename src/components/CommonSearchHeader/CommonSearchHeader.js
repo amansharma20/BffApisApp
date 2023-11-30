@@ -10,10 +10,6 @@ import CartIconComponent from '../cartIcon/CartIconComponent';
 const CommonSearchHeader = () => {
   const navigation = useNavigation();
 
-  const onPressCart = () => {
-    navigation.navigate('CartScreen');
-  };
-
   return (
     <Box paddingHorizontal="s16" backgroundColor="white">
       <Box
@@ -46,11 +42,10 @@ const CommonSearchHeader = () => {
         </TouchableOpacity>
         <Box flexDirection="row">
           <TouchableOpacity>
-            <Box marginHorizontal="s16">
+            <Box>
               <Image source={Icons.icon} style={styles.icon} />
             </Box>
           </TouchableOpacity>
-          {/* <Image source={Icons.cartIcon} style={styles.icon} /> */}
           <CartIconComponent />
         </Box>
       </Box>
@@ -63,8 +58,9 @@ export default CommonSearchHeader;
 const styles = StyleSheet.create({
   icon: {
     resizeMode: 'contain',
-    height: 22,
-    width: 22,
+    paddingLeft: 14,
+    // height: 22,
+    // width: 22,
   },
   searchIcon: {
     width: 22,

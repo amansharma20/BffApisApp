@@ -1,10 +1,8 @@
-//import liraries
-import React, { Component } from 'react';
+import React from 'react';
 import { Box, FONT, Text, theme } from '@/atoms';
 import { TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-// import { CartIcon } from '../../assets/svgs';
 import Icons from '@/assets/constants/Icons';
 import { useAuthRoute } from '@/hooks/useAuthRoute';
 const CartIconComponent = () => {

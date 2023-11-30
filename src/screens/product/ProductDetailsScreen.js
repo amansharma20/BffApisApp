@@ -41,10 +41,6 @@ const ProductDetailsScreen = props => {
   const variants = productDetails?.variationValues;
 
   const [selectedVariants, setSelectedVariants] = useState();
-  console.log(
-    '🚀 ~ file: ProductDetailsScreen.js:44 ~ ProductDetailsScreen ~ selectedVariants:',
-    selectedVariants,
-  );
 
   const [data, setData] = useState([]);
 
@@ -70,7 +66,7 @@ const ProductDetailsScreen = props => {
     pushUniqueData(selectedVariants);
   }, [selectedVariants]);
 
-  const findMatchingSKU = (specifications, products) => {
+  const findMatchingProperty = (specifications, products, propertyName) => {
     const matchingProduct = products?.find(product => {
       return (
         product &&
@@ -81,14 +77,16 @@ const ProductDetailsScreen = props => {
       );
     });
 
-    return matchingProduct ? matchingProduct?.sku : null;
+    return matchingProduct ? matchingProduct?.[propertyName] : null;
   };
 
   const [selectedSku, setSelectedSku] = useState(null);
   console.log(
-    '🚀 ~ file: ProductDetailsScreen.js:92 ~ ProductDetailsScreen ~ selectedSku:',
+    '🚀 ~ file: ProductDetailsScreen.js:84 ~ ProductDetailsScreen ~ selectedSku:',
     selectedSku,
   );
+
+  const [selectedImage, setSelectedImage] = useState([]);
 
   useEffect(() => {
     // Filter out undefined elements and transform the array into the desired object
@@ -98,16 +96,20 @@ const ProductDetailsScreen = props => {
       result[key] = value.value; // Assuming the desired value is in the 'value' property
       return result;
     }, {});
-    console.log(
-      '🚀 ~ file: ProductDetailsScreen.js:96 ~ transformedObject ~ transformedObject:',
-      transformedObject,
-    );
 
-    const matchingSKU = findMatchingSKU(
+    const matchingSKU = findMatchingProperty(
       transformedObject,
       productDetails?.skus,
+      'sku',
     );
 
+    const matchingImage = findMatchingProperty(
+      transformedObject,
+      productDetails?.skus,
+      'image',
+    );
+
+    setSelectedImage(matchingImage);
     setSelectedSku(matchingSKU);
   }, [data]);
 
@@ -191,12 +193,12 @@ const ProductDetailsScreen = props => {
     }
   };
 
-  useEffect(() => {
-    const getToken = async () => {
-      userToken = await Keychain.getGenericPassword();
-    };
-    getToken();
-  }, []);
+  // useEffect(() => {
+  //   const getToken = async () => {
+  //     userToken = await Keychain.getGenericPassword();
+  //   };
+  //   getToken();
+  // }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -227,7 +229,11 @@ const ProductDetailsScreen = props => {
             >
               {!productDetails?.error && imageCarousel && !isLoading ? (
                 <Box flex={1}>
-                  <CarouselCards images={imageCarousel} crosSelling={null} />
+                  <CarouselCards
+                    images={selectedImage || imageCarousel}
+                    // images={selectedImage}
+                    crosSelling={null}
+                  />
                   <Box flex={1}>
                     <Text variant="bold24">{productName}</Text>
                     <Text variant="bold16" mt="s6">

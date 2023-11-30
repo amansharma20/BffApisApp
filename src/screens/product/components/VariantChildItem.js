@@ -21,7 +21,7 @@ const VariantChildItem = ({ item, setNewArray, newArray }) => {
           item?.isSelected === true ? styles?.selectedItem : styles?.item,
         ]}
       >
-        <Text>{item?.value?.value}</Text>
+        <Text>{item?.value?.name}</Text>
       </Box>
     </TouchableOpacity>
   );
