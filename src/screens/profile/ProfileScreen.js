@@ -44,12 +44,16 @@ export default function ProfileScreen() {
   const userDetails = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
-  // console.log('userDetails: ', userDetails?.userProfile);
+  // console.log('userDetails:suno he kya ', userDetails?.userProfile);
+  console.log('userDetails:mili ',userDetails)
+
 
   useEffect(() => {
     setIsLoading(true);
     dispatch(
-      getCustomerDetails(`${config.cartUrl}userDetail/${customerId}`),
+      getCustomerDetails(`${config.cartUrl}userDetail/${customerId || storage.getString('customerId')}`),
+      // getCustomerDetails(`${config.cartUrl}userDetail`),
+
     ).then(() => {
       setIsLoading(false);
     });

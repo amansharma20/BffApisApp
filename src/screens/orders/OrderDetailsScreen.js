@@ -13,21 +13,30 @@ import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton'
 import { useDispatch, useSelector } from 'react-redux';
 import { getOrderDetailsAsyncThunk } from '@/redux/orderDetailsApi/OrderDetailsApiAsyncThunk';
 import config from '@/config';
+import { useNavigation } from '@react-navigation/native';
 const OrderDetailsScreen = props => {
   const orderData = props?.route?.params?.orderData;
+
+const navigation = useNavigation()
   const [isLoading, setIsloading] = useState(true);
   const dispatch = useDispatch();
   const orderDetails = useSelector(
     state => state?.getOrdersDetailsApiSlice?.orderDetails?.data || [],
   );
-
+console.log("orderDetailshenaaaa",orderDetails)
   useEffect(() => {
     setIsloading(true);
     dispatch(
       getOrderDetailsAsyncThunk(
         `${config.cartUrl}orderDetailById/${orderData.id}`,
       ),
-    ).then(() => {
+    ).then((res) => {
+      if(res?.payload?.status==401){
+        console.log("user is unauthorized");
+        // navigation.navigate('LoginScreen');
+        // signout();
+
+      }
       setIsloading(false);
     });
   }, [orderData]);
@@ -91,7 +100,7 @@ const OrderDetailsScreen = props => {
                     Items in your order
                   </Text>
                   <FlatList
-                    data={orderDetails?.transformedData}
+                    data={orderDetails?.productData}
                     renderItem={item => {
                       const data = item?.item;
                       return <OrderItem item={data} />;

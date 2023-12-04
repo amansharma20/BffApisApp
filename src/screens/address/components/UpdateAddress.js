@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { customerId } from '@/utils/appUtils';
 import { getCustomerDetails } from '@/redux/profileApi/ProfileApiAsyncThunk';
 
-const AddAddress = () => {
+const UpdateAddress = () => {
   const [firstName, setFirstName] = useState('aamir');
   const [lastName, setLastName] = useState('bohra');
   const [phoneNumber, setPhoneNumber] = useState('912345678');
@@ -64,8 +64,8 @@ const AddAddress = () => {
   };
   const navigation = useNavigation();
 
-  const addAddressHandler = async () => {
-    setLoading(true);
+  const updateAddressHandler = async () => {
+    setIsLoading(true);
     const reqBody = {
       firstName: firstName,
       lastName: lastName,
@@ -76,32 +76,28 @@ const AddAddress = () => {
       countryCode: 'IN',
       phone: phoneNumber,
       zipCode: postalCode,
-    
     };
-
     console.log(reqBody,"reqbobdy")
-    const res = await api.postWithEndpoint(
-      // `sfcc/addCustomerAddress/${customerId}`,
-      `${config.cartUrl}postCustomerAddress/${customerId || storage.getString('customerId')}`,
-      reqBody,
-    );
+
+    
+    const res = await api.patch(`${config.cartUrl}patchUpdateCustomerAddress/${customerId || storage.getString('customerId')}/addresses/${address?.addressId}`,reqBody,)
+    console.log('res?.data?.status: ', res, storage.getString('customerId'));
     console.log('res?.data: ', res?.data);
+   
+    
+    if (res?.data?.status == 204 || res?.data?.status == 200) {
+      // dispatch(getCustomerDetails(`sfcc/user-details/${customerId || storage.getString('customerId')}`)).then(
+      dispatch(getCustomerDetails(`${config.cartUrl}getCustomerAddress/${customerId || storage.getString('customerId')}`)).then(
 
-    console.log('res?.data?.status: ', res?.data?.status,storage.getString('customerId'),customerId);
-
-    if (res?.data?.status == 200 || res?.data?.status == 201) {
-      // dispatch(getCustomerDetails(`sfcc/user-details/${customerId}`));
-      dispatch(getCustomerDetails(`${config.cartUrl}getCustomerAddress/${customerId || storage.getString('customerId')}`));
-
-      setLoading(false);
-      Alert.alert('Address Added Successfully');
-      navigation.navigate('AddressScreen');
-    } else if (res?.data?.status == 401) {
-      setLoading(false);
-      Alert.alert('Unauthorize', 'Your session is expired ,Please Login!');
-      navigation.navigate('LoginScreen');
+        (res) => {
+          console.log(res?.payload?.data,"show it");
+          console.log("its coming");
+          setIsLoading(false);
+        },
+      );
     }
-  };
+
+  }
   return (
     <>
       <CommonHeader title={'Manage Delivery Address'} showCartIcon={true} />
@@ -208,14 +204,14 @@ const AddAddress = () => {
         >
           <CommonSolidButton
             title={loading ? 'loading' : 'Add Address'}
-            onPress={addAddressHandler}
+            onPress={updateAddressHandler}
           />
         </Box>
       </ScrollView>
     </>
   );
 };
-export default AddAddress;
+export default UpdateAddress;
 
 const styles = StyleSheet.create({
   input: {

@@ -25,6 +25,8 @@ const PersonalDetailsScreen = () => {
       state?.getCustomerDetailsApiSlice?.customerDetails?.data?.userProfile,
   );
 
+  console.log("userDetails chal raha k",userDetails)
+
   const onPressLogout = () => {
     signOut();
   };

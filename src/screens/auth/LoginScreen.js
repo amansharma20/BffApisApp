@@ -43,7 +43,8 @@ export default function LoginScreen(props) {
       'Content-Type': 'Application/json',
     });
 
-    if (response.data?.status === 201) {
+    console.log("daafaf",response.data)
+    if (response.data?.status === 201 || response.data?.status === 200) {
       console.log('HERE');
       // await AsyncStorage.setItem(
       //   'tokenExpiry',
@@ -52,6 +53,7 @@ export default function LoginScreen(props) {
       // var token = response?.data?.data?.validation?.authCookie?.Value;
       var token = response?.data?.data?.bearerToken;
       const customerId = response?.data?.data?.customer_id;
+      console.log("cyst",customerId)
       reduxStorage.setItem('customerId', customerId);
       await AsyncStorage.setItem('tokenExpiry', token);
       signIn(token);

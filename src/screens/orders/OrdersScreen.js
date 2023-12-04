@@ -106,6 +106,7 @@ const OrderScreen = () => {
     setIsLoading(true);
     dispatch(getOrdersData(`${config.cartUrl}orderDetail/${customerId}`))
       .then(res => {
+        console.log("customerOrders",customerOrders)
         setIsLoading(false);
       })
       .catch(error => {
