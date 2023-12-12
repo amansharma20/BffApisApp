@@ -19,7 +19,6 @@ const AddressScreen = () => {
   const userAddresses = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
-  // console.log('userAddresses: ', userAddresses?.userProfile);
 
   return (
     <>
@@ -47,7 +46,7 @@ const AddressScreen = () => {
           <FlatList
             data={userAddresses?.userProfile}
             renderItem={userAddress => (
-              <ViewAddress userAddress={userAddress || []} />
+              <ViewAddress userAddress={userAddress || []} /> 
             )}
           />
         </Box>

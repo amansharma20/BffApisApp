@@ -44,8 +44,6 @@ export default function ProfileScreen() {
   const userDetails = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
-  // console.log('userDetails:suno he kya ', userDetails?.userProfile);
-  console.log('userDetails:mili ',userDetails)
 
 
   useEffect(() => {

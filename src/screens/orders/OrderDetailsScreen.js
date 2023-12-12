@@ -23,7 +23,6 @@ const navigation = useNavigation()
   const orderDetails = useSelector(
     state => state?.getOrdersDetailsApiSlice?.orderDetails?.data || [],
   );
-console.log("orderDetailshenaaaa",orderDetails)
   useEffect(() => {
     setIsloading(true);
     dispatch(

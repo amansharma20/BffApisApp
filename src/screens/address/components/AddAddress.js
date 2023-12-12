@@ -6,8 +6,7 @@ import { api } from '@/api/SecureAPI';
 import config from '@/config';
 import { storage } from '@/store';
 
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -22,18 +21,41 @@ import { useDispatch, useSelector } from 'react-redux';
 import { customerId } from '@/utils/appUtils';
 import { getCustomerDetails } from '@/redux/profileApi/ProfileApiAsyncThunk';
 
-const AddAddress = () => {
-  const [firstName, setFirstName] = useState('aamir');
-  const [lastName, setLastName] = useState('bohra');
-  const [phoneNumber, setPhoneNumber] = useState('912345678');
-  const [country, setCoutry] = useState('india');
-  const [postalCode, setPostalCode] = useState('56565');
-  const [city, setCity] = useState('indore');
-  const [state, setState] = useState('mp');
-  const [addressLine1, setAddressLine1] = useState('malhar mall');
-  const [addressLine2, setAddressLine2] = useState('c21');
+const AddAddress = props => {
+  console.log(
+    'address mila kya',
+    props?.route?.params?.address === undefined ? 'add' : 'update',
+  );
+  const address = props?.route?.params?.address;
+
+  const isUpdate = address !== undefined;
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [country, setCoutry] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (address) {
+      setLastName(address.lastName);
+      setFirstName(address.firstName);
+      setPhoneNumber(address.phone);
+      setCoutry(address.country);
+      setPostalCode(address.postalCode);
+      setState(address.state);
+      setCity(address.city);
+      setAddressLine1(address.add1);
+      setAddressLine2(address.addressLine2);
+    }
+  }, address);
+  
   const onChangeFirstName = fname => {
     setFirstName(fname);
   };
@@ -71,37 +93,87 @@ const AddAddress = () => {
       lastName: lastName,
       address1: addressLine1,
       address2: addressLine2,
-      salutation:"Mr",
+      salutation: 'Mr',
       city: city,
       countryCode: 'IN',
       phone: phoneNumber,
       zipCode: postalCode,
-    
     };
 
-    console.log(reqBody,"reqbobdy")
-    const res = await api.postWithEndpoint(
-      // `sfcc/addCustomerAddress/${customerId}`,
-      `${config.cartUrl}postCustomerAddress/${customerId || storage.getString('customerId')}`,
-      reqBody,
-    );
-    console.log('res?.data: ', res?.data);
+    console.log(reqBody, 'reqbobdy');
 
-    console.log('res?.data?.status: ', res?.data?.status,storage.getString('customerId'),customerId);
+    if (!isUpdate) {
+      const res = await api.postWithEndpoint(
+        // `sfcc/addCustomerAddress/${customerId}`,
+        `${config.cartUrl}postCustomerAddress/${
+          customerId || storage.getString('customerId')
+        }`,
+        reqBody,
+      );
+      console.log('res?.data: ', res?.data);
 
-    if (res?.data?.status == 200 || res?.data?.status == 201) {
-      // dispatch(getCustomerDetails(`sfcc/user-details/${customerId}`));
-      dispatch(getCustomerDetails(`${config.cartUrl}getCustomerAddress/${customerId || storage.getString('customerId')}`));
+      console.log(
+        'res?.data?.status: ',
+        res?.data?.status,
+        storage.getString('customerId'),
+        customerId,
+      );
 
-      setLoading(false);
-      Alert.alert('Address Added Successfully');
-      navigation.navigate('AddressScreen');
-    } else if (res?.data?.status == 401) {
-      setLoading(false);
-      Alert.alert('Unauthorize', 'Your session is expired ,Please Login!');
-      navigation.navigate('LoginScreen');
+      if (res?.data?.status == 200 || res?.data?.status == 201) {
+        // dispatch(getCustomerDetails(`sfcc/user-details/${customerId}`));
+        dispatch(
+          getCustomerDetails(
+            `${config.cartUrl}userDetail/${
+              customerId || storage.getString('customerId')
+            }`,
+          ),
+        );
+
+        setLoading(false);
+        Alert.alert('Address Added Successfully');
+        navigation.navigate('AddressScreen');
+      } else if (res?.data?.status == 401) {
+        setLoading(false);
+        Alert.alert('Unauthorize', 'Your session is expired ,Please Login!');
+        navigation.navigate('LoginScreen');
+      }
+    } else {
+      const res = await api.patch(
+        `${config.cartUrl}patchUpdateCustomerAddress/${
+          customerId || storage.getString('customerId')
+        }/addresses/${address?.addressId}`,
+        reqBody,
+      );
+      console.log('res?.data: ', res?.data);
+      console.log('res?.data?.status: ', res, storage.getString('customerId'));
+
+      if (res?.data?.status == 204 || res?.data?.status == 200) {
+        dispatch(
+          getCustomerDetails(
+            `${config.cartUrl}userDetail/${
+              customerId || storage.getString('customerId')
+            }`,
+          ),
+        )
+          .then(res => {
+            console.log(res?.payload?.data, 'show it to me');
+            console.log('its coming');
+            setLoading(false);
+
+            Alert.alert('Address updated Successfully');
+            navigation.navigate('AddressScreen');
+          })
+          .catch(error => {
+            console.error('Error occurred:', error);
+            setLoading(false);
+          });
+      } else {
+        setLoading(false);
+        console.error('Update address failed');
+      }
     }
   };
+
   return (
     <>
       <CommonHeader title={'Manage Delivery Address'} showCartIcon={true} />
@@ -207,7 +279,9 @@ const AddAddress = () => {
           backgroundColor="white"
         >
           <CommonSolidButton
-            title={loading ? 'loading' : 'Add Address'}
+            title={
+              loading ? 'loading' : isUpdate ? 'Update Address' : 'Add Address'
+            }
             onPress={addAddressHandler}
           />
         </Box>

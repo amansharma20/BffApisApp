@@ -24,6 +24,7 @@ import CheckoutShimmer from '@/components/shimmers/CheckoutShimmer';
 import OrderSummaryShimmer from '@/components/shimmers/OrderSummaryShimmer';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { storage } from '@/store';
+
 const CheckoutScreen = props => {
   const navigation = useNavigation();
   const customerIdFromStorage = storage.getString('customerId');
@@ -49,6 +50,8 @@ const CheckoutScreen = props => {
       state?.getShippmentMethodsApiSlice?.shippmentMethods?.data
         ?.applicable_shipping_methods,
   );
+
+  
   useEffect(() => {
     setFlag(false);
     const fetchShippmentMethods = async () => {
@@ -130,6 +133,7 @@ const CheckoutScreen = props => {
     shipment();
   }, [basketId, selectedAddressIndex, selectedShippmentIndex, flag]);
 
+
   const orderConfirm = async () => {
     if (isUserLoggedIn) {
       setIsOrderConfirm(true);
@@ -200,6 +204,7 @@ const CheckoutScreen = props => {
                   />
                   {/* <ShippingMethod checkoutDetails={checkoutDetails} /> */}
                 </Box>
+                
               </Box>
             </>
           ) : (
