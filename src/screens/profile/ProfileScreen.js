@@ -44,7 +44,7 @@ export default function ProfileScreen() {
   const userDetails = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
-  // console.log('userDetails: ', userDetails?.userProfile);
+  console.log('userDetails: ', userDetails?.userProfile);
 
   useEffect(() => {
     setIsLoading(true);

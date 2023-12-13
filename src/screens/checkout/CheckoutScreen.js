@@ -24,38 +24,70 @@ import CheckoutShimmer from '@/components/shimmers/CheckoutShimmer';
 import OrderSummaryShimmer from '@/components/shimmers/OrderSummaryShimmer';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { storage } from '@/store';
+import { getPaymentMethods } from '@/redux/paymentMethodApi/paymentMethodApiAsyncThunk';
+
 const CheckoutScreen = props => {
+  console.log('propsss',props)
   const navigation = useNavigation();
   const customerIdFromStorage = storage.getString('customerId');
   const [customerId, setCustomerId] = useState(customerIdFromStorage);
-
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const basketId = props.route.params?.basketId;
+  console.log('basketIdsss',basketId)
   const [checkoutDetails, setCheckoutDetails] = useState(null);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isOrderConfirm, setIsOrderConfirm] = useState(false);
   const [orderSummaryLoading, setOrderSummaryLoading] = useState(false);
   const [selectedShippmentIndex, setSelectedShippmentIndex] = useState(0);
+  const [selectedPaymentIndex, setSelectedPaymentIndex] = useState(0);
   const [flag, setFlag] = useState(false);
+  const [cartData, setCartData] = useState(0);  
   const dispatch = useDispatch();
+
+
   const ADDRESSES_DATA = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
   console.log('ADDRESSES_DATA: ', ADDRESSES_DATA);
+  console.log('selectedAddressIndex',selectedAddressIndex)
+
+  const paymentMethods = useSelector(
+    state =>
+        state?.getPaymentMethodsApiSlice?.paymentMethods?.data?.paymentMethods,
+  );
+  console.log('paymentMethods',paymentMethods)
+
+  useEffect(() =>{
+    setFlag(false);
+    const fetchPaymentMethods = async () => {
+      setIsLoading(true);
+      await dispatch(
+        getPaymentMethods(
+          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
+        ),
+      ).then(()=>{
+        setFlag(true);
+      });
+      setIsLoading(false);
+    };
+    fetchPaymentMethods();
+  },[basketId, selectedPaymentIndex]);
+  console.log("selectedPaymentIndex",selectedPaymentIndex)
 
   const shippmentMethods = useSelector(
     state =>
       state?.getShippmentMethodsApiSlice?.shippmentMethods?.data
-        ?.applicable_shipping_methods,
+        ?.shipmentMethods,
   );
+  console.log('shippmentMethods',shippmentMethods)
   useEffect(() => {
     setFlag(false);
     const fetchShippmentMethods = async () => {
       setIsLoading(true);
       await dispatch(
         getShippmentMethods(
-          `${config.checkoutUrl}sfcc/shipping_method/${basketId}/me`,
+          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
         ),
       ).then(() => {
         setFlag(true);
@@ -83,64 +115,137 @@ const CheckoutScreen = props => {
       state_code: '45200',
       title: 'OcapiDemo',
     };
+    console.log("reqbodyyy",reqBody)
     const shipment = async () => {
       const reqBodyShippment = {
         id: shippmentMethods?.[selectedShippmentIndex]?.id,
       };
+      console.log("idhhh",id)
 
       if (shippmentMethods?.length > 0 && flag === true) {
-        const response = await api.putWithEndPoint(
-          `${config.checkoutUrl}sfcc/new_shippment_method/${basketId}?shipment_id=me`,
-          reqBodyShippment,
-        );
-        const shippment_address = await api.putWithEndPoint(
-          `${config.checkoutUrl}sfcc/new_shipping_address/${basketId}?shipment_id=me`,
-          reqBody,
-        );
-        const billingAddress = await api.putWithEndPoint(
-          `${config.checkoutUrl}sfcc/new_billing_address/${basketId}`,
-          reqBody,
-        );
-        setCheckoutDetails(billingAddress?.data?.data);
+        // const response = await api.putWithEndPoint(
+        //   `${config.checkoutUrl}sfcc/new_shippment_method/${basketId}?shipment_id=me`,
+        //   reqBodyShippment,
+        // );
+        // const shippment_address = await api.putWithEndPoint(
+        //   `${config.checkoutUrl}sfcc/new_shipping_address/${basketId}?shipment_id=me`,
+        //   reqBody,
+        // );
+        // const billingAddress = await api.putWithEndPoint(
+        //   `${config.checkoutUrl}sfcc/new_billing_address/${basketId}`,
+        //   reqBody,
+        // );
+        // setCheckoutDetails(billingAddress?.data?.data);
 
-        const reqBodyPayment = {
-          payment_card: {
-            card_type: 'Visa',
-            credit_card_expired: false,
-            credit_card_token: '123',
-            expiration_month: 8,
-            expiration_year: 2024,
-            holder: 'shubham verma',
-            issue_number: '123',
-            number: '411111111111',
-            security_code: '123',
-            valid_from_month: 4,
-            valid_from_year: 21,
-          },
-          amount: billingAddress?.data?.data?.amount,
-          payment_method_id: 'CREDIT_CARD',
-        };
-        const confirmPayment = await api.postWithEndpoint(
-          `${config.checkoutUrl}sfcc/confirmPayment/${basketId}`,
-          reqBodyPayment,
-        );
-        setOrderSummaryLoading(false);
+        // const reqBodyPayment = {
+        //   payment_card: {
+        //     card_type: 'Visa',
+        //     credit_card_expired: false,
+        //     credit_card_token: '123',
+        //     expiration_month: 8,
+        //     expiration_year: 2024,
+        //     holder: 'shubham verma',
+        //     issue_number: '123',
+        //     number: '411111111111',
+        //     security_code: '123',
+        //     valid_from_month: 4,
+        //     valid_from_year: 21,
+        //   },
+        //   amount: billingAddress?.data?.data?.amount,
+        //   payment_method_id: 'CREDIT_CARD',
+        // };
+        // const confirmPayment = await api.postWithEndpoint(
+        //   `${config.checkoutUrl}sfcc/confirmPayment/${basketId}`,
+        //   reqBodyPayment,
+        // );
+        // setOrderSummaryLoading(false);
       }
     };
     shipment();
   }, [basketId, selectedAddressIndex, selectedShippmentIndex, flag]);
 
+  console.log("selectedShippmentIndex",selectedShippmentIndex)
+  
+  useEffect(() => {
+    dispatch(
+      getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
+    ).then(res => {
+      if (res.payload.status === 200 || res.payload.status == 201) {
+        console.log('checkout api call successful',res.payload.data);
+        setCartData(res.payload.data);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        console.log('checkout api call not successful');
+      }
+    });
+  }, []);
+  
+  // console.log("wwww",cartData.products.map((item)=>item.itemId))
   const orderConfirm = async () => {
     if (isUserLoggedIn) {
       setIsOrderConfirm(true);
       const reqBody = {
-        basket_id: basketId,
+          "cart": {
+              "cartId": basketId,
+              "cartTotal": cartData.totalizers.CartTotal || 110222.11,
+              "cartItem": cartData.products.map((item)=>item.itemId) || "238"
+              
+          },
+          "shippingDetail": {
+              "id": shippmentMethods?.[selectedShippmentIndex]?.Id,
+              "shipmentId": "EUR001",
+              "shippingAddress": {
+                  "salutation": "Mr",
+                  "firstName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName || "AMMIR",
+                  "lastName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.lastName || "bohra",
+                  "address1": "c21 mall indore",
+                  "address2": "c21 mall indore",
+                  "zipCode": "12345",
+                  "country": "United States",
+                  "city": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.city || "Indore",
+                  "countryCode": "",
+                  "phone":  ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.phone || "12345678"
+              }
+          },
+          "billingAddress": {
+              "salutation": "Ms",
+              "firstName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName || "ammir",
+              "lastName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.lastName || "bohra",
+              "address1": "c21 mall indore",
+              "address2": "c21 mall indore",
+              "zipCode": "1234",
+              "country": "United States",
+              "city": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.city || "Indore",
+              "countryCode": "",
+              "phone":  ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.phone || "12345678"
+          },
+          "paymentData": {
+              "paymentId": paymentMethods?.[selectedPaymentIndex]?.id || "9",
+              "paymentMethodName": paymentMethods?.[selectedPaymentIndex].name || "Debit Card",
+              "paymentProviderName": paymentMethods?.[selectedPaymentIndex]?.payment_processor_id || "DummyPayment",
+              "cardDetails": {
+                  "cardType": "Visa",
+                  "creditCardExpired": false,
+                  "credit_card_token": "123",
+                  "expirationMonth": 8,
+                  "expirationYear": 2024,
+                  "holderName": "",
+                  "issue_number": "123",
+                  "cardNumber": "411111111111",
+                  "securityCode": "123",
+                  "validFromMonth": 4,
+                  "validFromYear": 21
+              }
+          }
       };
       const confirmOrder = await api.postWithEndpoint(
-        `${config.checkoutUrl}sfcc/placeOrder`,
+        `${config.checkoutUrl}placeOrder`,
+
         reqBody,
       );
-      if (confirmOrder?.data?.status === 200) {
+      console.log('reqBoddy',reqBody)
+      if (confirmOrder?.data?.status === 200 || confirmOrder?.data?.status === 201) {
         dispatch(
           createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),
         ).then(() => {
@@ -148,7 +253,8 @@ const CheckoutScreen = props => {
             getCustomerBasketApi(
               `${config.cartUrl}getCustomerCart/${customerId}`,
             ),
-          ).then(res => {
+          )
+          .then(res => {
             dispatch(
               getCustomerCartItems(
                 `${config.cartUrl}cartDetail/${res?.payload?.data?.baskets?.[0]?.basket_id}`,
@@ -156,6 +262,8 @@ const CheckoutScreen = props => {
             );
           });
         });
+
+
 
         Alert.alert('Order Placed', 'Your order is placed successfully');
         navigation.replace('OrdersScreen');
@@ -165,6 +273,9 @@ const CheckoutScreen = props => {
       navigation.navigate('LoginScreen');
     }
   };
+
+
+  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -200,6 +311,17 @@ const CheckoutScreen = props => {
                   />
                   {/* <ShippingMethod checkoutDetails={checkoutDetails} /> */}
                 </Box>
+                {/* <Box mb="s16">
+                  <Text mb="s16" variant="regular16">
+                    Select Payment method
+                  </Text>
+                  <CommonOptionsSelector
+                    DATA={paymentMethods}
+                    selectedIndex={selectedPaymentIndex}
+                    setSelectedIndex={setSelectedPaymentIndex}
+                    hideContinueButton
+                  />
+                </Box> */}
               </Box>
             </>
           ) : (
@@ -207,6 +329,31 @@ const CheckoutScreen = props => {
               <CheckoutShimmer />
             </>
           )}
+
+          {!isLoading ? (
+            <>
+              <Box paddingHorizontal="paddingHorizontal">
+                            
+                   <Box mb="s16">
+                  <Text mb="s16" variant="regular16">
+                    Select Payment method
+                  </Text>
+                  <CommonOptionsSelector
+                    DATA={paymentMethods}
+                    selectedIndex={selectedPaymentIndex}
+                    setSelectedIndex={setSelectedPaymentIndex}
+                    hideContinueButton
+                  />
+                </Box> 
+
+              </Box>
+            </>
+          ) : (
+            <>
+              <CheckoutShimmer />
+            </>
+          )}
+          
           {checkoutDetails || !orderSummaryLoading ? (
             <Box paddingHorizontal={'paddingHorizontal'} marginTop="s16">
               <Box style={styles.borderBox}>

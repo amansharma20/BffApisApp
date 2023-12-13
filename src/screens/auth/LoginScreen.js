@@ -43,7 +43,7 @@ export default function LoginScreen(props) {
       'Content-Type': 'Application/json',
     });
 
-    if (response.data?.status === 201) {
+    if (response.data?.status === 201 || response.data?.status === 200) {
       console.log('HERE');
       // await AsyncStorage.setItem(
       //   'tokenExpiry',
