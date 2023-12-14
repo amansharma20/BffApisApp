@@ -116,11 +116,11 @@ const CheckoutScreen = props => {
       title: 'OcapiDemo',
     };
     console.log("reqbodyyy",reqBody)
+
     const shipment = async () => {
       const reqBodyShippment = {
         id: shippmentMethods?.[selectedShippmentIndex]?.id,
       };
-      console.log("idhhh",id)
 
       if (shippmentMethods?.length > 0 && flag === true) {
         // const response = await api.putWithEndPoint(
@@ -182,19 +182,21 @@ const CheckoutScreen = props => {
   }, []);
   
   // console.log("wwww",cartData.products.map((item)=>item.itemId))
+  // console.log("wwww",shippmentMethods.map((item)=>item.id))
+
   const orderConfirm = async () => {
     if (isUserLoggedIn) {
       setIsOrderConfirm(true);
       const reqBody = {
           "cart": {
               "cartId": basketId,
-              "cartTotal": cartData.totalizers.CartTotal || 110222.11,
-              "cartItem": cartData.products.map((item)=>item.itemId) || "238"
+              "cartTotal": cartData.totalizers.CartTotal,
+              "cartItem": cartData.products.map((item)=>item.itemId),
               
           },
           "shippingDetail": {
-              "id": shippmentMethods?.[selectedShippmentIndex]?.Id,
-              "shipmentId": "EUR001",
+              "id":  "me",
+              "shipmentId": shippmentMethods?.[selectedShippmentIndex]?.id || "EUR001",
               "shippingAddress": {
                   "salutation": "Mr",
                   "firstName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName || "AMMIR",
@@ -354,7 +356,7 @@ const CheckoutScreen = props => {
             </>
           )}
           
-          {checkoutDetails || !orderSummaryLoading ? (
+          {/* {checkoutDetails || !orderSummaryLoading ? (
             <Box paddingHorizontal={'paddingHorizontal'} marginTop="s16">
               <Box style={styles.borderBox}>
                 <Text variant="bold14">Order Summary</Text>
@@ -397,7 +399,7 @@ const CheckoutScreen = props => {
             <>
               <OrderSummaryShimmer />
             </>
-          )}
+          )} */}
         </ScrollView>
         <Box
           padding="s16"
