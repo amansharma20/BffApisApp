@@ -204,6 +204,53 @@ const Delete = async (endPoint, data, loading) => {
   }
 };
 
+
+const deleteWithEndpoint = async (endPoint, data, loading) => {
+  let userToken = await Keychain.getGenericPassword();
+  let token = userToken.password;
+  if (loading) {
+    console.log('loading: ', loading);
+  }
+  try {
+    let response = await axios.delete(
+       endPoint,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          token: token,
+        },
+        data: data,
+        validateStatus: () => true,
+        withCredentials: true,
+      },
+    );
+
+    console.log('responseddd: ', response);
+
+    if (response.data !== undefined && response.data.status) {
+      return {
+        success: true,
+        data: response,
+      };
+    } else {
+      return {
+        success: false,
+        data: response,
+      };
+    }
+  } catch (e) {
+    return {
+      success: false,
+      data: e,
+    };
+  } finally {
+    if (loading) {
+      console.log('loading: ', loading);
+    }
+  }
+};
+
 const put = async (endPoint, data, loading) => {
   let userToken = await Keychain.getGenericPassword();
   let token = userToken.password;
@@ -331,6 +378,7 @@ export const api = {
   postWithEndpoint,
   put,
   Delete,
+  deleteWithEndpoint,
   patch,
   putWithEndPoint,
 };

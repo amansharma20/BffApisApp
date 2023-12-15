@@ -30,6 +30,7 @@ import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
 import ProductVariants from './components/ProductVariants';
 
 const ProductDetailsScreen = props => {
+  console.log("pros",props)
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -130,6 +131,70 @@ const ProductDetailsScreen = props => {
   const [isLoading, setIsLoading] = useState(true);
   const imageCarousel = productDetails?.skus;
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
+  const [isLoadingAddToGuestCart, setIsLoadingAddToGuestCart] = useState(false);
+
+
+  const onPressAddToGuestCart = () => {
+    setIsLoadingAddToGuestCart(true);
+    if (!isUserLoggedIn && basketId) {
+      const addToGuestCart = async () => {
+        userToken = await Keychain.getGenericPassword();
+        let response = await axios.post(
+          config.cartUrl + `${config.guestAddItemCart}/${basketId}`,
+          {
+            itemId: selectedSku,
+            quantity: 1,
+            uniqueId:"",
+          },
+          {
+            headers: {
+              token: userToken.password,
+            },
+            validateStatus: () => true,
+            withCredentials: true,
+          },
+        );
+        if (response?.status == 401) {
+          setIsLoadingAddToGuestCart(false);
+          Alert.alert('Unauthorize', 'Your session is expired , Please login!');
+          navigation.navigate('LoginScreen');
+        } else if (response.status === 201 || response.status === 200) {
+          setIsLoadingAddToGuestCart(false);
+          dispatch(
+            getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
+          ).then(res => {
+            if (res.payload.status === 200) {
+              console.log('carts api call successful');
+              setIsLoadingAddToGuestCart(false);
+              setIsLoading(false);
+            } else {
+              setIsLoading(false);
+              setIsLoadingAddToGuestCart(false);
+              console.log('carts api call not successful');
+            }
+          });
+          Alert.alert('Product Added to cart');
+        } else {
+          console.log('hii');
+          setIsLoadingAddToGuestCart(false);
+          Alert.alert('Something went wrong');
+        }
+      };
+      addToGuestCart();
+    } else {
+      setIsLoadingAddToGuestCart(false);
+      setIsLoading(false);
+      // Alert.alert('basket Id is not specified');
+      Alert.alert('Unauthorized', 'Please login first', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => navigation.navigate('LoginScreen') },
+      ]);
+    }
+  };
+
 
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
@@ -269,7 +334,9 @@ const ProductDetailsScreen = props => {
             >
               <CommonSolidButton
                 title={!isLoadingAddToCart ? 'Add to Cart' : 'Loading...'}
-                onPress={!isLoadingAddToCart ? onPressAddToCart : () => {}}
+                // onPress={!isLoadingAddToCart ? onPressAddToCart : () => {}}
+                onPress={!isLoadingAddToCart ? onPressAddToCart : onPressAddToGuestCart}
+
                 disabled={selectedSku === null ? true : false}
               />
             </Box>

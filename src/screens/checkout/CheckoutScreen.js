@@ -158,7 +158,7 @@ const CheckoutScreen = props => {
         //   `${config.checkoutUrl}sfcc/confirmPayment/${basketId}`,
         //   reqBodyPayment,
         // );
-        // setOrderSummaryLoading(false);
+        setOrderSummaryLoading(false);
       }
     };
     shipment();
@@ -247,7 +247,7 @@ const CheckoutScreen = props => {
         reqBody,
       );
       console.log('reqBoddy',reqBody)
-      if (confirmOrder?.data?.status === 200 || confirmOrder?.data?.status === 201) {
+      if (confirmOrder?.data?.status === 204 || confirmOrder?.data?.status === 201 || confirmOrder?.data?.status === 200) {
         dispatch(
           createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),
         ).then(() => {

@@ -51,13 +51,16 @@ export default function LoginScreen(props) {
       // );
       // var token = response?.data?.data?.validation?.authCookie?.Value;
       var token = response?.data?.data?.bearerToken;
+      
       const customerId = response?.data?.data?.customer_id;
       reduxStorage.setItem('customerId', customerId);
       await AsyncStorage.setItem('tokenExpiry', token);
       signIn(token);
       dispatch(
         getCustomerBasketApi(`${config.cartUrl}getCustomerCart/${customerId}`),
+        
       ).then(res => {
+        console.log("baasketId",customerId)
         dispatch(
           getCustomerCartItems(
             `${config.cartUrl}cartDetail/${res?.payload?.data?.baskets?.[0]?.basket_id}`,
