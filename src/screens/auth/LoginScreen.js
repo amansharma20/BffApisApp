@@ -32,6 +32,8 @@ export default function LoginScreen(props) {
   const [password, setPassword] = useState('Amber@123');
   const [isLoading, setIsLoading] = useState(false);
 
+
+
   const onPressLogin = async () => {
     setIsLoading(true);
     // CommonLoading.show();
@@ -182,12 +184,34 @@ export default function LoginScreen(props) {
                 </Box>
               )}
             </Box>
+
           </Box>
         ) : (
           <>
             <SignUpScreen setSelectedOption={setSelectedOption} />
           </>
         )}
+                    <Box mt="s16">
+              {!isLoading ? (
+                <>
+                  <CommonSolidButton
+                    title="LOGIN AS A GUEST"
+                    onPress={() => navigation.navigate('Home')}
+                    disabled={getButtonStatus()}
+                  />
+                </>
+              ) : (
+                <Box
+                  backgroundColor="black"
+                  height={40}
+                  borderRadius={theme.spacing.lml}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <ActivityIndicator color={'white'} />
+                </Box>
+              )}
+            </Box>
       </Box>
     </ScrollView>
   );

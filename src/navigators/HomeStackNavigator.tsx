@@ -17,6 +17,7 @@ import AddressScreen from '@/screens/address/AddressScreen';
 import SearchScreen from '@/screens/search/SearchScreen';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import SearchScreenAlgolia from '@/screens/search/SearchScreenAlgolia';
+import GuestCartScreen from '@/screens/guestcart/GuestCartScreen';
 
 const Stack = createStackNavigator();
 
@@ -58,7 +59,16 @@ const HomeStackNavigator = () => {
         </>
       ) : (
         <></>
-      )}
+        )}
+
+        {isUserLoggedIn == false ? ( 
+          <>
+        <Stack.Screen name="GuestCartScreen" component={GuestCartScreen}/>
+        </>
+        ):(
+          <></>
+        )}
+        
     </Stack.Navigator>
   );
 };

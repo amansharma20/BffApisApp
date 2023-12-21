@@ -2,6 +2,10 @@ import axios from 'axios';
 import * as Keychain from 'react-native-keychain';
 import { applicationProperties } from '../utils/application.properties';
 import config from '@/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState} from 'react';
+
+
 
 const get = async (endPoint, data, loading) => {
   let userToken = await Keychain.getGenericPassword();
@@ -14,6 +18,7 @@ const get = async (endPoint, data, loading) => {
     let response = await axios.get(config.baseUrl + endPoint, {
       headers: {
         token: token,
+        
       },
       validateStatus: () => true,
       withCredentials: true,
@@ -45,14 +50,74 @@ const getWithEndpoint = async (endPoint, data, loading) => {
   console.log('endPoint: ', endPoint);
   let userToken = await Keychain.getGenericPassword();
   let token = userToken.password;
+  console.log("tokeeen",token)
   if (loading) {
-    console.log('loading: ', loading);
+    console.log('loadingssss: ', loading);
   }
 
   try {
     let response = await axios.get(endPoint, {
       headers: {
         token: token,
+      },
+      validateStatus: () => true,
+      withCredentials: true,
+    });
+
+    if (response.data !== undefined && response.data.status) {
+      return {
+        success: true,
+        data: response,
+      };
+    } else {
+      return {
+        success: true,
+        data: response,
+      };
+    }
+  } catch (e) {
+    return {
+      success: false,
+      data: e,
+    };
+  } finally {
+    if (loading) {
+      console.log('loading: ', loading);
+    }
+  }
+};
+
+
+
+// const [id, setId] = useState('') 
+ 
+// const guestUserUniqueId = id;
+// console.log(guestUserUniqueId, 'id in secureAPi coming...');
+
+
+//  useEffect(() => {
+//    const guestCart = async () => {
+//      setIsLoading(true);
+//      const guestCustomerUniqueId = await AsyncStorage.getItem(
+//        'guestCustomerUniqueId',
+//      );
+//      setId(guestCustomerUniqueId);
+
+//      }
+//    guestCart();
+//  }, []);
+
+const getWithGuestEndpoint = async (endPoint, data, loading) => {
+  console.log('endPoint: ', endPoint);
+  const guestCustomerUniqueId = await AsyncStorage.getItem(
+    'guestCustomerUniqueId',
+  );
+console.log("guestCustomerUniqueIdss",guestCustomerUniqueId)
+
+  try {
+    let response = await axios.get(endPoint, {
+      headers: {
+        token: guestCustomerUniqueId,
       },
       validateStatus: () => true,
       withCredentials: true,
@@ -130,6 +195,48 @@ const postWithEndpoint = async (endPoint, data, loading) => {
     let response = await axios.post(endPoint, data, {
       headers: {
         token: token,
+      },
+      validateStatus: () => true,
+      withCredentials: true,
+    });
+
+    if (response.data !== undefined && response.data.status) {
+      return {
+        success: true,
+        data: response,
+      };
+    } else {
+      return {
+        success: false,
+        data: response,
+      };
+    }
+  } catch (e) {
+    return {
+      success: false,
+      data: e,
+    };
+  } finally {
+    if (loading) {
+      console.log('loading: ', loading);
+    }
+  }
+};
+
+const postWithGuestEndpoint = async (endPoint, data, loading) => {
+  console.log('endPoint: ', endPoint);
+  const guestCustomerUniqueId = await AsyncStorage.getItem(
+    'guestCustomerUniqueId',
+  );
+console.log("guestCustomerUniqueIdss",guestCustomerUniqueId)
+  
+  if (loading) {
+    console.log('loading: ', loading);
+  }
+  try {
+    let response = await axios.post(endPoint, data, {
+      headers: {
+        token: guestCustomerUniqueId,
       },
       validateStatus: () => true,
       withCredentials: true,
@@ -374,8 +481,10 @@ const patch = async (endPoint, data, loading) => {
 export const api = {
   get,
   getWithEndpoint,
+  getWithGuestEndpoint,
   post,
   postWithEndpoint,
+  postWithGuestEndpoint,
   put,
   Delete,
   deleteWithEndpoint,

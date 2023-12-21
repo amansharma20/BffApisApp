@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { createCustomerBasket } from '@/redux/createBasketApi/CreateBasketApiAsyncThunk';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
+import {getGuestCustomerCartItems} from '@/redux/GuestCartApi/GuestCartApiAsyncThunk';
 // import { customerId } from '@/utils/appUtils';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import CommonOptionsSelector from '@/components/CommonOptionsSelector/CommonOptionsSelector';
@@ -64,7 +65,9 @@ const CheckoutScreen = props => {
       setIsLoading(true);
       await dispatch(
         getPaymentMethods(
-          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
+          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me?user=guest`,
+          // `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
+
         ),
       ).then(()=>{
         setFlag(true);
@@ -81,13 +84,50 @@ const CheckoutScreen = props => {
         ?.shipmentMethods,
   );
   console.log('shippmentMethods',shippmentMethods)
+
+
+
+// useEffect(()=>{
+// api.getWithGuestEndpoint()
+// },[])
+
+    const guestCustomerUniqueId =  AsyncStorage.getItem(
+      'guestCustomerUniqueId',
+    );
+console.log('guestCustomerUniqueIdddd',guestCustomerUniqueId)
+
+useEffect(() => {
+  // const guestCart = async () => {
+  //   const guestCustomerUniqueId = await AsyncStorage.getItem(
+  //     'guestCustomerUniqueId',
+  //   );
+  dispatch(
+    getGuestCustomerCartItems(`${config.cartUrl}guestCartDetail/${basketId}?uniqueId=idb90f3bf18d1dc8`),
+    // getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`)
+
+  ).then(res => {
+    if (res.payload.status === 200 || res.payload.status == 201) {
+      console.log('checkout api call successful',res.payload.data);
+      setCartData(res.payload.data);
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+      console.log('checkout api call not successful');
+    }
+  });
+// };
+// guestCart();
+}, []);
+
   useEffect(() => {
     setFlag(false);
     const fetchShippmentMethods = async () => {
       setIsLoading(true);
       await dispatch(
         getShippmentMethods(
-          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
+          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me?user=guest`,
+          // `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
+
         ),
       ).then(() => {
         setFlag(true);
@@ -166,28 +206,21 @@ const CheckoutScreen = props => {
 
   console.log("selectedShippmentIndex",selectedShippmentIndex)
   
-  useEffect(() => {
-    dispatch(
-      getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`),
-    ).then(res => {
-      if (res.payload.status === 200 || res.payload.status == 201) {
-        console.log('checkout api call successful',res.payload.data);
-        setCartData(res.payload.data);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        console.log('checkout api call not successful');
-      }
-    });
-  }, []);
+
+
+
+console.log("www",cartData)
   
   // console.log("wwww",cartData.products.map((item)=>item.itemId))
   // console.log("wwww",shippmentMethods.map((item)=>item.id))
+  console.log("ggg",shippmentMethods)
+
 
   const orderConfirm = async () => {
-    if (isUserLoggedIn) {
+    if (!isUserLoggedIn) {
       setIsOrderConfirm(true);
       const reqBody = {
+        "type":"guest",
           "cart": {
               "cartId": basketId,
               "cartTotal": cartData.totalizers.CartTotal,
@@ -195,7 +228,7 @@ const CheckoutScreen = props => {
               
           },
           "shippingDetail": {
-              "id":  "me",
+              "id": shippmentMethods?.[selectedShippmentIndex]?.Id || me,
               "shipmentId": shippmentMethods?.[selectedShippmentIndex]?.id || "EUR001",
               "shippingAddress": {
                   "salutation": "Mr",
@@ -241,7 +274,7 @@ const CheckoutScreen = props => {
               }
           }
       };
-      const confirmOrder = await api.postWithEndpoint(
+      const confirmOrder = await api.postWithGuestEndpoint(
         `${config.checkoutUrl}placeOrder`,
 
         reqBody,

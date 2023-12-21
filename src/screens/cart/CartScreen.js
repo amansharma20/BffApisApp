@@ -11,22 +11,32 @@ import {
 import { Box, Text, theme } from '@/atoms';
 import { useSelector, useDispatch } from 'react-redux';
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute} from '@react-navigation/native';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
+import {getGuestCustomerCartItems} from '@/redux/GuestCartApi/GuestCartApiAsyncThunk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CartItem from './CartItem';
 import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton';
 import { customerId } from '@/utils/appUtils';
 import { storage } from '@/store';
 import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
 import { useAuthRoute } from '@/hooks/useAuthRoute';
+import GuestCartScreen from '@/screens/guestcart/GuestCartScreen'
 import config from '@/config';
+
 const CartScreen = () => {
+  const route = useRoute();
+  const queryStringParams = route?.params?.queryString;
+  console.log(queryStringParams,"consoled log")
+
   const navigation = useNavigation();
   const { getAuthRoute } = useAuthRoute();
   const [isLoading, setIsLoading] = useState(true);
   const [cartItemsArray, setCartItemsArray] = useState([]);
   const { isUserLoggedIn } = useIsUserLoggedIn();
+  const [id, setId] = useState('');
+
   const dispatch = useDispatch();
 
   const customerCartId = useSelector(
@@ -39,9 +49,51 @@ const CartScreen = () => {
   const customerCartItems = useSelector(
     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
   );
+  console.log("customerCartItems",customerCartItems)
   const renderItem = () => {
     20;
   };
+
+    
+  const guestUserUniqueId = id;
+  console.log(guestUserUniqueId,'id is coming...')
+
+  useEffect(() => {
+    const guestCart = async () => {
+      setIsLoading(true);
+      const guestCustomerUniqueId = await AsyncStorage.getItem(
+        'guestCustomerUniqueId',
+      );
+      setId(guestCustomerUniqueId);
+
+      if (guestCustomerUniqueId) {
+        const headers = {
+          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
+        };
+        dispatch(
+          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
+        ).then(() => {
+          setIsLoading(false);
+          console.log('redux called successfully',guestCustomerUniqueId);
+        });
+        setIsLoading(false);
+      } else {
+        const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
+        AsyncStorage.setItem('guestCustomerUniqueId', guestUserUniqueId);
+        const headers = {
+          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
+        };
+        dispatch(
+          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
+        ).then(() => {
+          setIsLoading(false);
+        });
+        setIsLoading(false);
+        console.log('redux called ya successfully',guestUserUniqueId);
+      }
+    };
+    guestCart();
+  }, []);
 
   useEffect(() => {
     dispatch(
@@ -57,6 +109,28 @@ const CartScreen = () => {
     });
   }, []);
 
+//   const guestUserBasketId = useSelector(
+//     state =>
+//     state?.getGuestCustomerCartItemsApiSlice?.baskets[0].basket_id
+//   );
+// console.log("guestUserBasketId",guestUserBasketId)
+
+  const [cartData,setCartData] = useState()
+
+  useEffect(() => {
+    dispatch(
+      getGuestCustomerCartItems(`${config.cartUrl}guestCartDetail/${queryStringParams}?uniqueId=${guestUserUniqueId}`),
+    ).then(res => {
+      if (res.payload.status === 200) {
+        setCartData(res.payload.data.products)
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        console.log('guest carts api call not successful');
+      }
+    });
+  }, [guestUserUniqueId]);
+
   const ListEmptyComponent = () => {
     return (
       <Box flex={1} justifyContent="center">
@@ -65,6 +139,8 @@ const CartScreen = () => {
     );
   };
 
+  console.log(cartData,"this is the cart Data")
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Box flex={1} backgroundColor="white">
@@ -147,7 +223,11 @@ const CartScreen = () => {
             <Box flex={1} justifyContent="center">
               <Text textAlign="center">Please logged in first</Text>
             </Box>
-          </>
+         
+      
+            {/* <GuestCartScreen /> */}
+        
+         </> 
         )}
       </Box>
       {/* {customerCartItems?.products?.length && isUserLoggedIn ? ( */}
@@ -172,9 +252,6 @@ const CartScreen = () => {
           />
         </Box>
       </>
-      {/* ) : (
-        <></>
-      )} */}
     </SafeAreaView>
   );
 };

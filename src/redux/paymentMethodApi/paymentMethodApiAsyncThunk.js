@@ -4,7 +4,7 @@ export const getPaymentMethods = createAsyncThunk(
   'paymentMethods',
   async (endpoint, thunkAPI) => {
     try {
-      const response = await api.getWithEndpoint(endpoint);
+      const response = await api.getWithGuestEndpoint(endpoint);
       return response.data;
     } catch (error) {
       return error;

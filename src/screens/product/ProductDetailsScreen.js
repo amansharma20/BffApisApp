@@ -16,6 +16,7 @@ import * as Keychain from 'react-native-keychain';
 import { useNavigation } from '@react-navigation/native';
 import { Box, Text } from '@atoms';
 import CarouselCards from '@/components/imageCarousel/CarouselCards';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '@/atoms';
 import { useDispatch, useSelector } from 'react-redux';
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
@@ -24,6 +25,7 @@ import { getProductDetails } from '@/redux/productDetails/ProductDetailsApiAsync
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import axios from 'axios';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
+import {getGuestCustomerCartItems} from '@/redux/GuestCartApi/GuestCartApiAsyncThunk';
 import { storage } from '@/store';
 import config, { ENV } from '@/config';
 import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
@@ -131,12 +133,127 @@ const ProductDetailsScreen = props => {
   const [isLoading, setIsLoading] = useState(true);
   const imageCarousel = productDetails?.skus;
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
+  const [id, setId] = useState('');
+
   const [isLoadingAddToGuestCart, setIsLoadingAddToGuestCart] = useState(false);
 
+  const guestUserUniqueId = id;
+console.log(id,'id is here...')
+  
+  useEffect(() => {
+    const guestCart = async () => {
+      setIsLoading(true);
+      const guestCustomerUniqueId = await AsyncStorage.getItem(
+        'guestCustomerUniqueId',
+      );
+      setId(guestCustomerUniqueId)
+      if (guestCustomerUniqueId) {
+        const headers = {
+          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
+        };
+        dispatch(
+          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
+        ).then(() => {
+          setIsLoading(false);
+          console.log('redux called successfully',guestCustomerUniqueId);
+        });
+        setIsLoading(false);
+      } else {
+        const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
+        AsyncStorage.setItem('guestCustomerUniqueId', guestUserUniqueId);
+        const headers = {
+          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
+        };
+        dispatch(
+          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
+        ).then(() => {
+          setIsLoading(false);
+        });
+        setIsLoading(false);
+        console.log('redux called ya successfully',guestUserUniqueId);
+      }
+    };
+    guestCart();
+  }, []);
 
+  const onPressAddToGuestCart = () => {
+    console.log("i am here ")
+    setIsLoadingAddToGuestCart(true);
+    if (!isUserLoggedIn) {
+      const addToGuestCart = async () => {
+        userToken = await Keychain.getGenericPassword();
+       
+        let response = await axios.post(
+          config.cartUrl + `${config.addToGuestCartUrl}/`,
+          {
+            itemId: selectedSku,
+            quantity: 1,
+            uniqueId: guestUserUniqueId,
+          },
+          {
+            headers: {
+              token: userToken.password,
+            },
+            validateStatus: () => true,
+            withCredentials: true,
+          },
+        );
+        console.log("respssss",response)
+        console.log("guestCustomerUniqueIdddd",guestUserUniqueId)
+
+        if (response?.status == 401 ) {
+          setIsLoadingAddToGuestCart(false);
+          Alert.alert('Unauthorize', 'Your guest session is expired , Please login!');
+          navigation.navigate('LoginScreen');
+        } else if (response.status === 201 || response.status === 200) {
+          setIsLoadingAddToGuestCart(false);
+          dispatch(
+            getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestUserUniqueId}`),
+          ).then(res => {
+            if (res.payload.status === 200 ) {
+              console.log('guest carts api call successful',res?.payload?.data);
+              // const queryString = res?.payload?.data;
+              const queryString = res?.payload?.data?.baskets[0].basket_id;
+              console.log(queryString,'this is the personal queryString')
+              navigation.navigate('GuestCartScreen',{queryString})
+              setIsLoadingAddToGuestCart(false);
+              setIsLoading(false);
+            } else {
+              setIsLoading(false);
+              setIsLoadingAddToGuestCart(false);
+              console.log('guest carts api call not successful');
+            }
+          });
+          Alert.alert('Product Added to guest cart');
+        } else {
+          console.log('helo');
+          setIsLoadingAddToGuestCart(false);
+          Alert.alert('Something went wrong');
+        }
+      };
+      addToGuestCart();
+    } else {
+      setIsLoadingAddToGuestCart(false);
+      setIsLoading(false);
+      // Alert.alert('basket Id is not specified');
+      Alert.alert('Unauthorizedsss', 'Please login firstsss', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => navigation.navigate('LoginScreen') },
+      ]);
+    }
+  };
+
+const onPressAddToCartButton = () => {
+  console.log("time to show",isUserLoggedIn)
+  isUserLoggedIn ? onPressAddToCart() : onPressAddToGuestCart();
+}
 
 
   const onPressAddToCart = () => {
+    console.log("log in ")
     setIsLoadingAddToCart(true);
     if (isUserLoggedIn && basketId) {
       const addToCart = async () => {
@@ -154,6 +271,7 @@ const ProductDetailsScreen = props => {
             validateStatus: () => true,
             withCredentials: true,
           },
+          console.log("ressss",response)
         );
         if (response?.status == 401) {
           setIsLoadingAddToCart(false);
@@ -203,6 +321,7 @@ const ProductDetailsScreen = props => {
     getToken();
   }, []);
 
+
   useEffect(() => {
     setIsLoading(true);
     dispatch(
@@ -211,6 +330,7 @@ const ProductDetailsScreen = props => {
       setIsLoading(false);
     });
   }, [productId]);
+  console.log("isLoadingAddToCart", isLoadingAddToCart)
 
   return (
     <>
@@ -274,7 +394,9 @@ const ProductDetailsScreen = props => {
             >
               <CommonSolidButton
                 title={!isLoadingAddToCart ? 'Add to Cart' : 'Loading...'}
-                onPress={!isLoadingAddToCart ? onPressAddToCart : () => {}}
+                onPress={!isLoadingAddToCart ? onPressAddToCartButton : () => {}}
+                // onPress={!isLoadingAddToCart ? onPressAddToCart : () => {}}
+
                 // onPress={!isLoadingAddToCart ? onPressAddToCart : onPressAddToGuestCart}
 
                 disabled={selectedSku === null ? true : false}
