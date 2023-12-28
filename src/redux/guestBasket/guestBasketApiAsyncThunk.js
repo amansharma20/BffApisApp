@@ -1,8 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '@/api/SecureAPI';
-export const getGuestCustomerCartItems = createAsyncThunk(
-  'guestcartItems',
-  async endpoint => {
+
+export const getGuestCustomerBasketApi = createAsyncThunk(
+  'basketApi',
+  async (endpoint: string) => {
     try {
       const response = await api.getWithGuestEndpoint(endpoint);
       return response.data;
@@ -11,3 +12,4 @@ export const getGuestCustomerCartItems = createAsyncThunk(
     }
   },
 );
+

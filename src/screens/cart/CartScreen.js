@@ -58,42 +58,42 @@ const CartScreen = () => {
   const guestUserUniqueId = id;
   console.log(guestUserUniqueId,'id is coming...')
 
-  useEffect(() => {
-    const guestCart = async () => {
-      setIsLoading(true);
-      const guestCustomerUniqueId = await AsyncStorage.getItem(
-        'guestCustomerUniqueId',
-      );
-      setId(guestCustomerUniqueId);
+  // useEffect(() => {
+  //   const guestCart = async () => {
+  //     setIsLoading(true);
+  //     const guestCustomerUniqueId = await AsyncStorage.getItem(
+  //       'guestCustomerUniqueId',
+  //     );
+  //     setId(guestCustomerUniqueId);
 
-      if (guestCustomerUniqueId) {
-        const headers = {
-          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
-        };
-        dispatch(
-          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
-        ).then(() => {
-          setIsLoading(false);
-          console.log('redux called successfully',guestCustomerUniqueId);
-        });
-        setIsLoading(false);
-      } else {
-        const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
-        AsyncStorage.setItem('guestCustomerUniqueId', guestUserUniqueId);
-        const headers = {
-          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
-        };
-        dispatch(
-          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
-        ).then(() => {
-          setIsLoading(false);
-        });
-        setIsLoading(false);
-        console.log('redux called ya successfully',guestUserUniqueId);
-      }
-    };
-    guestCart();
-  }, []);
+  //     if (guestCustomerUniqueId) {
+  //       const headers = {
+  //         'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
+  //       };
+  //       dispatch(
+  //         getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
+  //       ).then(() => {
+  //         setIsLoading(false);
+  //         console.log('redux called successfully',guestCustomerUniqueId);
+  //       });
+  //       setIsLoading(false);
+  //     } else {
+  //       const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
+  //       AsyncStorage.setItem('guestCustomerUniqueId', guestUserUniqueId);
+  //       const headers = {
+  //         'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
+  //       };
+  //       dispatch(
+  //         getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
+  //       ).then(() => {
+  //         setIsLoading(false);
+  //       });
+  //       setIsLoading(false);
+  //       console.log('redux called ya successfully',guestUserUniqueId);
+  //     }
+  //   };
+  //   guestCart();
+  // }, []);
 
   useEffect(() => {
     dispatch(
@@ -139,7 +139,7 @@ const CartScreen = () => {
     );
   };
 
-  console.log(cartData,"this is the cart Data")
+  console.log(cartData,"this is the guest cart Data")
   
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

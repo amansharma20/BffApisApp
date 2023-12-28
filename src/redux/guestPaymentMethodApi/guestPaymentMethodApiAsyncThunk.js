@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '@/api/SecureAPI';
-export const getGuestCustomerCartItems = createAsyncThunk(
-  'guestcartItems',
-  async endpoint => {
+export const getGuestPaymentMethods = createAsyncThunk(
+  'guestPaymentsMethods',
+  async (endpoint, thunkAPI) => {
     try {
       const response = await api.getWithGuestEndpoint(endpoint);
       return response.data;

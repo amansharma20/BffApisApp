@@ -25,14 +25,15 @@ import { getProductDetails } from '@/redux/productDetails/ProductDetailsApiAsync
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import axios from 'axios';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
-import {getGuestCustomerCartItems} from '@/redux/GuestCartApi/GuestCartApiAsyncThunk';
+import { getGuestCustomerCartItems } from '@/redux/GuestCartApi/GuestCartApiAsyncThunk';
 import { storage } from '@/store';
 import config, { ENV } from '@/config';
 import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
 import ProductVariants from './components/ProductVariants';
+import { api } from '@/api/SecureAPI';
 
 const ProductDetailsScreen = props => {
-  console.log("pros",props)
+  console.log('pros', props);
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -119,6 +120,13 @@ const ProductDetailsScreen = props => {
       state?.getCustomerBasketApiSlice?.customerBasket?.data?.baskets?.[0]
         ?.basket_id,
   );
+  console.log('basketIddd', basketId);
+
+  // const guestBasketId = useSelector(
+  //   state =>
+  //     state?.getGuestCustomerBasketApiSlice
+  // )
+  // console.log('basketGuestId',guestBasketId)
 
   const productId =
     props.route.params.item?.productId ||
@@ -137,85 +145,68 @@ const ProductDetailsScreen = props => {
 
   const [isLoadingAddToGuestCart, setIsLoadingAddToGuestCart] = useState(false);
 
-  const guestUserUniqueId = id;
-console.log(id,'id is here...')
-  
-  useEffect(() => {
-    const guestCart = async () => {
-      setIsLoading(true);
-      const guestCustomerUniqueId = await AsyncStorage.getItem(
-        'guestCustomerUniqueId',
-      );
-      setId(guestCustomerUniqueId)
-      if (guestCustomerUniqueId) {
-        const headers = {
-          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
-        };
-        dispatch(
-          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
-        ).then(() => {
-          setIsLoading(false);
-          console.log('redux called successfully',guestCustomerUniqueId);
-        });
-        setIsLoading(false);
-      } else {
-        const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
-        AsyncStorage.setItem('guestCustomerUniqueId', guestUserUniqueId);
-        const headers = {
-          'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
-        };
-        dispatch(
-          getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`),
-        ).then(() => {
-          setIsLoading(false);
-        });
-        setIsLoading(false);
-        console.log('redux called ya successfully',guestUserUniqueId);
-      }
-    };
-    guestCart();
-  }, []);
+  const guestCustomerUniqueId = id;
+  console.log(id, 'id is here...');
 
   const onPressAddToGuestCart = () => {
-    console.log("i am here ")
+    console.log('i am here ');
     setIsLoadingAddToGuestCart(true);
     if (!isUserLoggedIn) {
+      console.log("This is the API testing for guestcart");
       const addToGuestCart = async () => {
+        const guestBearerToken = await AsyncStorage.getItem('guestBearerToken');
+
+        const guestCustomerUniqueId = await AsyncStorage.getItem(
+          'guestCustomerUniqueId',
+        );
+
+        const guestBasketIds = await AsyncStorage.getItem('guestBasketIds');
+        console.log('guestBasketIds', guestBasketIds);
+        console.log('guestBearerTokensssggg', guestBearerToken);
+        console.log('guestCustomerUniqueIfafafa', guestCustomerUniqueId);
         userToken = await Keychain.getGenericPassword();
-       
         let response = await axios.post(
-          config.cartUrl + `${config.addToGuestCartUrl}/`,
+          config.cartUrl + `${config.addToGuestCartUrl}/${guestBasketIds}`,
           {
             itemId: selectedSku,
             quantity: 1,
-            uniqueId: guestUserUniqueId,
+            uniqueId: guestCustomerUniqueId,
           },
           {
             headers: {
-              token: userToken.password,
+              token: guestBearerToken,
             },
             validateStatus: () => true,
             withCredentials: true,
           },
         );
-        console.log("respssss",response)
-        console.log("guestCustomerUniqueIdddd",guestUserUniqueId)
+        console.log('respssss', response);
+        console.log('guestCustomerUniqueIdddd', guestCustomerUniqueId);
 
-        if (response?.status == 401 ) {
+        if (response?.status == 401) {
           setIsLoadingAddToGuestCart(false);
-          Alert.alert('Unauthorize', 'Your guest session is expired , Please login!');
+          Alert.alert(
+            'Unauthorize',
+            'Your guest session is expired , Please login!',
+          );
           navigation.navigate('LoginScreen');
         } else if (response.status === 201 || response.status === 200) {
           setIsLoadingAddToGuestCart(false);
           dispatch(
-            getGuestCustomerCartItems(`${config.cartUrl}guestCustomerCart/${guestUserUniqueId}`),
+            getGuestCustomerCartItems(
+              `${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`,
+            ),
           ).then(res => {
-            if (res.payload.status === 200 ) {
-              console.log('guest carts api call successful',res?.payload?.data);
+            if (res?.payload?.status === 200 || res?.payload?.status === 201) {
+              console.log(
+                'guest carts api call successful',
+                res?.payload?.data,
+              );
               // const queryString = res?.payload?.data;
               const queryString = res?.payload?.data?.baskets[0].basket_id;
-              console.log(queryString,'this is the personal queryString')
-              navigation.navigate('GuestCartScreen',{queryString})
+              AsyncStorage.setItem('guestBasketIds', queryString);
+              console.log(queryString, 'this is the personal queryString');
+              navigation.navigate('GuestCartScreen', { queryString });
               setIsLoadingAddToGuestCart(false);
               setIsLoading(false);
             } else {
@@ -226,13 +217,14 @@ console.log(id,'id is here...')
           });
           Alert.alert('Product Added to guest cart');
         } else {
-          console.log('helo');
+          
           setIsLoadingAddToGuestCart(false);
           Alert.alert('Something went wrong');
         }
       };
       addToGuestCart();
     } else {
+      console.log('helo this is for the testing purpose');
       setIsLoadingAddToGuestCart(false);
       setIsLoading(false);
       // Alert.alert('basket Id is not specified');
@@ -246,14 +238,81 @@ console.log(id,'id is here...')
     }
   };
 
-const onPressAddToCartButton = () => {
-  console.log("time to show",isUserLoggedIn)
-  isUserLoggedIn ? onPressAddToCart() : onPressAddToGuestCart();
-}
+  const onPressAddToCartButton = () => {
+    console.log('time to show', isUserLoggedIn);
+    isUserLoggedIn ? onPressAddToCart() : onPressAddToGuestCart();
+  };
 
+  useEffect(() => {
+    // guestCart();
+    const getToken = async () => {
+      userToken = await Keychain.getGenericPassword();
+    };
+    getToken();
+  }, []);
+
+  // const guestCart = async () => {
+  //   // await AsyncStorage.removeItem('guestCustomerUniqueId');
+  //   // await AsyncStorage.removeItem('guestBearerToken');
+  //   // await AsyncStorage.removeItem('guestBasketIds');
+  //   setIsLoading(true);
+  //   const guestCustomerUniqueId = await AsyncStorage.getItem(
+  //     'guestCustomerUniqueId',
+  //   );
+  //   console.log('ddd', guestCustomerUniqueId);
+  //   setId(guestCustomerUniqueId);
+
+  //   if (guestCustomerUniqueId) {
+  //     dispatch(
+  //       getGuestCustomerCartItems(
+  //         `${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`,
+  //       ),
+  //     )
+  //       .then(res => {
+  //         if (res?.payload?.status === 200 || res?.payload?.status === 201) {
+  //           console.log('guest carts api call successful', res?.payload?.data);
+  //           // const queryString = res?.payload?.data;
+  //           const queryString = res?.payload?.data?.baskets[0].basket_id;
+  //           console.log(queryString, 'this is the personal queryString');
+  //           navigation.navigate('GuestCartScreen', { queryString });
+  //           setIsLoadingAddToGuestCart(false);
+  //           setIsLoading(false);
+  //         }
+  //       })
+  //       .then(() => {
+  //         setIsLoading(false);
+  //         console.log('redux called successfully', guestCustomerUniqueId);
+  //       });
+  //     setIsLoading(false);
+  //   } else {
+  //     // const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
+  //     const guestUserUniqueId = await api.postWithGuestEndpoint(
+  //       `${config.cartUrl}guestCreateCart`,
+  //     );
+  //     console.log('guestCreateCartssss', guestUserUniqueId.data.data.uniqueId);
+  //     const guestCustomerUniqueId = guestUserUniqueId.data.data.uniqueId;
+  //     console.log('guestCustomerUniqueIdg', guestCustomerUniqueId);
+  //     const guestBearerToken = guestUserUniqueId.data.data.bearerToken;
+  //     console.log('guestBearerToken', guestUserUniqueId.data.data.bearerToken);
+  //     await AsyncStorage.setItem(
+  //       'guestCustomerUniqueId',
+  //       guestCustomerUniqueId,
+  //     );
+  //     await AsyncStorage.setItem('guestBearerToken', guestBearerToken);
+  //     dispatch(
+  //       getGuestCustomerCartItems(
+  //         `${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`,
+  //       ),
+  //     ).then(() => {
+  //       setIsLoading(false);
+  //     });
+  //     setIsLoading(false);
+  //     console.log('redux called ya successfully', guestCustomerUniqueId);
+  //   }
+  // };
 
   const onPressAddToCart = () => {
-    console.log("log in ")
+    console.log('log in ');
     setIsLoadingAddToCart(true);
     if (isUserLoggedIn && basketId) {
       const addToCart = async () => {
@@ -271,7 +330,7 @@ const onPressAddToCartButton = () => {
             validateStatus: () => true,
             withCredentials: true,
           },
-          console.log("ressss",response)
+          console.log('ressss', response),
         );
         if (response?.status == 401) {
           setIsLoadingAddToCart(false);
@@ -314,13 +373,10 @@ const onPressAddToCartButton = () => {
     }
   };
 
-  useEffect(() => {
-    const getToken = async () => {
-      userToken = await Keychain.getGenericPassword();
-    };
-    getToken();
-  }, []);
 
+  // useEffect(()=>{
+  // api.postWithEndpoint()
+  // },[])
 
   useEffect(() => {
     setIsLoading(true);
@@ -330,7 +386,7 @@ const onPressAddToCartButton = () => {
       setIsLoading(false);
     });
   }, [productId]);
-  console.log("isLoadingAddToCart", isLoadingAddToCart)
+  console.log('isLoadingAddToCart', isLoadingAddToCart);
 
   return (
     <>
@@ -394,7 +450,9 @@ const onPressAddToCartButton = () => {
             >
               <CommonSolidButton
                 title={!isLoadingAddToCart ? 'Add to Cart' : 'Loading...'}
-                onPress={!isLoadingAddToCart ? onPressAddToCartButton : () => {}}
+                onPress={
+                  !isLoadingAddToCart ? onPressAddToCartButton : () => {}
+                }
                 // onPress={!isLoadingAddToCart ? onPressAddToCart : () => {}}
 
                 // onPress={!isLoadingAddToCart ? onPressAddToCart : onPressAddToGuestCart}

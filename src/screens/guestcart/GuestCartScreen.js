@@ -26,6 +26,8 @@ const GuestCartScreen = () => {
   const queryStringParams = route?.params?.queryString;
   console.log(queryStringParams, 'consoled guest log');
 
+  // AsyncStorage.setItem('guestBasketId',queryStringParams);
+  
   const navigation = useNavigation();
   const { getAuthRoute } = useAuthRoute();
   const [isLoading, setIsLoading] = useState(true);
@@ -37,8 +39,10 @@ const GuestCartScreen = () => {
 
   
 
-  const guestUserUniqueId = id;
-  console.log(guestUserUniqueId, 'id is coming...');
+  const guestCustomerUniqueId = id;
+  console.log(guestCustomerUniqueId, 'id is coming...');
+
+ 
 
   useEffect(() => {
     const guestCart = async () => {
@@ -62,8 +66,8 @@ const GuestCartScreen = () => {
         });
         setIsLoading(false);
       } else {
-        const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
-        AsyncStorage.setItem('guestCustomerUniqueId', guestUserUniqueId);
+        const guestCustomerUniqueId = 'id' + Math.random().toString(16).slice(2);
+        AsyncStorage.setItem('guestCustomerUniqueId', guestCustomerUniqueId);
         const headers = {
           'Mysterious-Customer-Unique-Id': guestCustomerUniqueId,
         };
@@ -75,7 +79,7 @@ const GuestCartScreen = () => {
           setIsLoading(false);
         });
         setIsLoading(false);
-        console.log('redux called ya successfully', guestUserUniqueId);
+        console.log('redux called ya successfully', guestCustomerUniqueId);
       }
     };
     guestCart();
@@ -96,9 +100,12 @@ const GuestCartScreen = () => {
   const [cartData, setCartData] = useState();
 
   useEffect(() => {
+    const guestCustomerUniqueId = AsyncStorage.getItem(
+      'guestCustomerUniqueId',
+    );
     dispatch(
       getGuestCustomerCartItems(
-        `${config.cartUrl}guestCartDetail/${queryStringParams}?uniqueId=${guestUserUniqueId}`,
+        `${config.cartUrl}guestCartDetail/${queryStringParams}?uniqueId=${guestCustomerUniqueId}`,
       ),
     ).then(res => {
       if (res.payload.status === 200) {
@@ -109,7 +116,7 @@ const GuestCartScreen = () => {
         console.log('guest carts api call not successful');
       }
     });
-  }, [guestUserUniqueId]);
+  },[guestCustomerUniqueId]);
 
   const ListEmptyComponent = () => {
     return (

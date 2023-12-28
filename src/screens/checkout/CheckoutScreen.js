@@ -19,6 +19,7 @@ import {getGuestCustomerCartItems} from '@/redux/GuestCartApi/GuestCartApiAsyncT
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import CommonOptionsSelector from '@/components/CommonOptionsSelector/CommonOptionsSelector';
 import { getShippmentMethods } from '@/redux/shippmentMethodApi/ShippmentMethodApiAsyncThunk';
+import {getGuestShippmentMethods} from '@/redux/guestShipmentMethodApi/guestShipmentMethodApiAsyncThunk';
 import config from '@/config';
 import HomeShimmers from '@/components/shimmers/HomeShimmers';
 import CheckoutShimmer from '@/components/shimmers/CheckoutShimmer';
@@ -26,6 +27,8 @@ import OrderSummaryShimmer from '@/components/shimmers/OrderSummaryShimmer';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { storage } from '@/store';
 import { getPaymentMethods } from '@/redux/paymentMethodApi/paymentMethodApiAsyncThunk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const CheckoutScreen = props => {
   console.log('propsss',props)
@@ -58,20 +61,43 @@ const CheckoutScreen = props => {
         state?.getPaymentMethodsApiSlice?.paymentMethods?.data?.paymentMethods,
   );
   console.log('paymentMethods',paymentMethods)
+  
+    // const guestPaymentsMethods = useSelector(
+    //   state =>
+    //       state?.getGuestPaymentMethodsApiSlice
+    // )
+    // console.log("guestPaymentMethods",guestPaymentsMethods)
+    
+    const guestPaymentMethods = useSelector(
+      state =>
+        // state?.getGuestShippmentMethodsApiSlice?.guestShippmentMethods?.data?.shipmentMethods,
+        state?.getGuestShippmentMethodsApiSlice?.guestShippmentMethods?.data?.paymentMethods,
+  
+    );
+    console.log("guestPaymentMethods",guestPaymentMethods)
 
   useEffect(() =>{
     setFlag(false);
     const fetchPaymentMethods = async () => {
       setIsLoading(true);
+      if(!isUserLoggedIn){
       await dispatch(
-        getPaymentMethods(
+        guestPaymentMethods(
           `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me?user=guest`,
-          // `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
-
         ),
       ).then(()=>{
         setFlag(true);
       });
+    }else{
+      await dispatch(
+        getPaymentMethods(
+          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
+        ),
+      ).then(()=>{
+        setFlag(true);
+      });
+
+    }
       setIsLoading(false);
     };
     fetchPaymentMethods();
@@ -85,53 +111,91 @@ const CheckoutScreen = props => {
   );
   console.log('shippmentMethods',shippmentMethods)
 
+  const guestShippmentMethods = useSelector(
+    state =>
+      state?.getGuestShippmentMethodsApiSlice?.guestShippmentMethods?.data?.shipmentMethods,
+      // state?.getGuestShippmentMethodsApiSlice?.guestShippmentMethods?.data,
+
+  );
+  console.log("guestShippmentMethods",guestShippmentMethods)
+
 
 
 // useEffect(()=>{
-// api.getWithGuestEndpoint()
+// api.getWithEndpoint()
 // },[])
 
-    const guestCustomerUniqueId =  AsyncStorage.getItem(
-      'guestCustomerUniqueId',
-    );
-console.log('guestCustomerUniqueIdddd',guestCustomerUniqueId)
+
+useEffect(()=>{
+  api.getWithGuestEndpoint()
+  },[])
+  
+const [id, setId] = useState('')
+
 
 useEffect(() => {
-  // const guestCart = async () => {
-  //   const guestCustomerUniqueId = await AsyncStorage.getItem(
-  //     'guestCustomerUniqueId',
-  //   );
+  const guestCart = async () => {
+    const guestCustomerUniqueId = await AsyncStorage.getItem(
+      'guestCustomerUniqueId',
+      setId(guestCustomerUniqueId)
+    );
+if(!isUserLoggedIn){
   dispatch(
-    getGuestCustomerCartItems(`${config.cartUrl}guestCartDetail/${basketId}?uniqueId=idb90f3bf18d1dc8`),
+    getGuestCustomerCartItems(`${config.cartUrl}guestCartDetail/${basketId}?uniqueId=${guestCustomerUniqueId}`),
     // getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`)
-
-  ).then(res => {
-    if (res.payload.status === 200 || res.payload.status == 201) {
-      console.log('checkout api call successful',res.payload.data);
-      setCartData(res.payload.data);
-      setIsLoading(false);
-    } else {
-      setIsLoading(false);
-      console.log('checkout api call not successful');
-    }
-  });
-// };
-// guestCart();
+    ).then(res => {
+      if (res.payload.status === 200 || res.payload.status == 201) {
+        console.log('checkout api guest call successful',res.payload.data);
+        setCartData(res.payload.data);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        console.log('checkout api guest call not successful');
+      }
+    });
+  }else{
+    dispatch(
+      getCustomerCartItems(`${config.cartUrl}cartDetail/${basketId}`)
+      ).then(res => {
+        if (res.payload.status === 200 || res.payload.status == 201) {
+          console.log('checkout api call successful',res.payload.data);
+          setCartData(res.payload.data);
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+          console.log('checkout api call not successful');
+        }
+      });
+  }
+}
+guestCart();
 }, []);
+
+// const isUserLoggedIns = useSelector((state) => state?.getShippmentMethodsApiSlice?.shippmentMethods?.data);
+// console.log("objectdddd",isUserLoggedIns)
 
   useEffect(() => {
     setFlag(false);
     const fetchShippmentMethods = async () => {
       setIsLoading(true);
+      if(!isUserLoggedIn) {
       await dispatch(
-        getShippmentMethods(
+        getGuestShippmentMethods(
           `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me?user=guest`,
-          // `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
-
+          // {isUserLoggedIn:false},
         ),
       ).then(() => {
         setFlag(true);
       });
+    }else{
+      await dispatch(
+        getShippmentMethods(
+          `${config.checkoutUrl}checkoutData/${basketId}/shipmentId/me`,
+        ),
+      ).then(() => {
+        setFlag(true);
+      });
+    }
       setIsLoading(false);
     };
     fetchShippmentMethods();
@@ -209,11 +273,14 @@ useEffect(() => {
 
 
 
-console.log("www",cartData)
-  
+   console.log("www",cartData)
   // console.log("wwww",cartData.products.map((item)=>item.itemId))
   // console.log("wwww",shippmentMethods.map((item)=>item.id))
+  console.log("idmmm",shippmentMethods?.[selectedShippmentIndex]?.id)
   console.log("ggg",shippmentMethods)
+  console.log('lll',guestShippmentMethods)
+  console.log("kkk",guestPaymentMethods)
+  console.log("ooo",paymentMethods)
 
 
   const orderConfirm = async () => {
@@ -228,8 +295,94 @@ console.log("www",cartData)
               
           },
           "shippingDetail": {
-              "id": shippmentMethods?.[selectedShippmentIndex]?.Id || me,
-              "shipmentId": shippmentMethods?.[selectedShippmentIndex]?.id || "EUR001",
+              "id": "me" || guestShippmentMethods?.[selectedShippmentIndex]?.Id,
+              "shipmentId": guestShippmentMethods?.[selectedShippmentIndex]?.id || "EUR001",
+              "shippingAddress": {
+                  "salutation": "Mr",
+                  "firstName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName || "AMMIR",
+                  "lastName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.lastName || "bohra",
+                  "address1": "c21 mall indore",
+                  "address2": "c21 mall indore",
+                  "zipCode": "12345",
+                  "country": "United States",
+                  "city": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.city || "Indore",
+                  "countryCode": "",
+                  "phone":  ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.phone || "12345678"
+              }
+          },
+          "billingAddress": {
+              "salutation": "Ms",
+              "firstName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName || "ammir",
+              "lastName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.lastName || "bohra",
+              "address1": "c21 mall indore",
+              "address2": "c21 mall indore",
+              "zipCode": "1234",
+              "country": "United States",
+              "city": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.city || "Indore",
+              "countryCode": "",
+              "phone":  ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.phone || "12345678"
+          },
+          "paymentData": {
+              "paymentId": guestPaymentMethods?.[selectedPaymentIndex]?.id || "9",
+              "paymentMethodName": guestPaymentMethods?.[selectedPaymentIndex].name || "Debit Card",
+              "paymentProviderName": guestPaymentMethods?.[selectedPaymentIndex]?.payment_processor_id || "DummyPayment",
+              "cardDetails": {
+                  "cardType": "Visa",
+                  "creditCardExpired": false,
+                  "credit_card_token": "123",
+                  "expirationMonth": 8,
+                  "expirationYear": 2024,
+                  "holderName": "",
+                  "issue_number": "123",
+                  "cardNumber": "411111111111",
+                  "securityCode": "123",
+                  "validFromMonth": 4,
+                  "validFromYear": 21
+              }
+          }
+      };
+      const confirmOrder = await api.postWithGuestEndpoint(
+        `${config.checkoutUrl}placeOrder`,
+        reqBody,
+      );
+      console.log('reqBoddy',reqBody)
+      if (confirmOrder?.data?.status === 204 || confirmOrder?.data?.status === 201 || confirmOrder?.data?.status === 200) {
+        // dispatch(
+        //   createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),
+        // ).then(() => {
+          // dispatch(
+          //   getGuestCustomerCartItems(
+          //     `${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`,
+          //   ),
+          // )
+          // .then(res => {
+          //   dispatch(
+          //     getGuestCustomerCartItems(
+          //       `${config.cartUrl}guestCartDetail/${basketId}?uniqueId=${guestCustomerUniqueId}`,
+          //     ),
+          //   );
+          // });
+        // });
+
+        Alert.alert('Order Placed', 'Your order is placed successfully');
+        navigation.replace('OrdersScreen');
+      }
+      await AsyncStorage.removeItem('guestCustomerUniqueId');
+      await AsyncStorage.removeItem('guestBearerToken');
+      setIsOrderConfirm(false);
+    } else {
+      // navigation.navigate('LoginScreen');
+      setIsOrderConfirm(true);
+      const reqBody = {
+          "cart": {
+              "cartId": basketId,
+              "cartTotal": cartData.totalizers.CartTotal,
+              "cartItem": cartData.products.map((item)=>item.itemId),
+              
+          },
+          "shippingDetail": {
+              "id": "me" || shippmentMethods?.[selectedShippmentIndex]?.Id || "EUR001" ,
+              "shipmentId": shippmentMethods?.[selectedShippmentIndex]?.Id || shippmentMethods?.[selectedShippmentIndex]?.id || "EUR001",
               "shippingAddress": {
                   "salutation": "Mr",
                   "firstName": ADDRESSES_DATA?.userProfile?.[selectedAddressIndex]?.firstName || "AMMIR",
@@ -274,12 +427,11 @@ console.log("www",cartData)
               }
           }
       };
-      const confirmOrder = await api.postWithGuestEndpoint(
+      const confirmOrder = await api.postWithEndpoint(
         `${config.checkoutUrl}placeOrder`,
-
         reqBody,
       );
-      console.log('reqBoddy',reqBody)
+      console.log('reqBoddyfff',reqBody)
       if (confirmOrder?.data?.status === 204 || confirmOrder?.data?.status === 201 || confirmOrder?.data?.status === 200) {
         dispatch(
           createCustomerBasket(`${config.cartUrl}${config.createCartUrl}`),
@@ -297,15 +449,10 @@ console.log("www",cartData)
             );
           });
         });
-
-
-
         Alert.alert('Order Placed', 'Your order is placed successfully');
         navigation.replace('OrdersScreen');
       }
       setIsOrderConfirm(false);
-    } else {
-      navigation.navigate('LoginScreen');
     }
   };
 
@@ -325,12 +472,19 @@ console.log("www",cartData)
                   <Text mb="s8" variant="regular16">
                     Select address
                   </Text>
+                  { !isUserLoggedIn ? <CommonOptionsSelector
+                    DATA={ADDRESSES_DATA?.userProfile}
+                    selectedIndex={selectedAddressIndex}
+                    setSelectedIndex={setSelectedAddressIndex}
+                    hideContinueButton
+                  /> : 
                   <CommonOptionsSelector
                     DATA={ADDRESSES_DATA?.userProfile}
                     selectedIndex={selectedAddressIndex}
                     setSelectedIndex={setSelectedAddressIndex}
                     hideContinueButton
                   />
+                  }
 
                   {/* <ShipmentAddress checkoutDetails={checkoutDetails} /> */}
                 </Box>
@@ -338,12 +492,19 @@ console.log("www",cartData)
                   <Text mb="s16" variant="regular16">
                     Select shipment method
                   </Text>
+                 { !isUserLoggedIn ? <CommonOptionsSelector
+                    DATA={guestShippmentMethods}
+                    selectedIndex={selectedShippmentIndex}
+                    setSelectedIndex={setSelectedShippmentIndex}
+                    hideContinueButton
+                  />:
                   <CommonOptionsSelector
                     DATA={shippmentMethods}
                     selectedIndex={selectedShippmentIndex}
                     setSelectedIndex={setSelectedShippmentIndex}
                     hideContinueButton
                   />
+                 }
                   {/* <ShippingMethod checkoutDetails={checkoutDetails} /> */}
                 </Box>
                 {/* <Box mb="s16">
@@ -373,12 +534,19 @@ console.log("www",cartData)
                   <Text mb="s16" variant="regular16">
                     Select Payment method
                   </Text>
+                 { !isUserLoggedIn  ? <CommonOptionsSelector
+                    DATA={guestPaymentMethods}
+                    selectedIndex={selectedPaymentIndex}
+                    setSelectedIndex={setSelectedPaymentIndex}
+                    hideContinueButton
+                  /> :
                   <CommonOptionsSelector
                     DATA={paymentMethods}
                     selectedIndex={selectedPaymentIndex}
                     setSelectedIndex={setSelectedPaymentIndex}
                     hideContinueButton
                   />
+                 }
                 </Box> 
 
               </Box>

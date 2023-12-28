@@ -14,6 +14,11 @@ import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import { reduxStorage, storage } from '@/store';
+import {getGuestCustomerCartItems} from '@/redux/GuestCartApi/GuestCartApiAsyncThunk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '@/api/SecureAPI';
+
+
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +26,7 @@ const HomeScreen = () => {
   const [isLoadingNewArival, setIsloadingNewArrival] = useState(false);
   const [isLoadingBestSelling, setIsLoadingBestSelling] = useState(false);
   const { isUserLoggedIn } = useIsUserLoggedIn();
+  const [isLoading, setIsLoading] = useState(true);
   const customerIdFromStorage = storage.getString('customerId');
 
   const [customerId, setCustomerId] = useState(customerIdFromStorage);
@@ -58,6 +64,8 @@ const HomeScreen = () => {
     ).then(() => {});
   }, [isUserLoggedIn]);
 
+
+
   const newArrivals = useAppSelector(
     state => state?.getNewArrivalApiSlice?.newArrivals?.data,
   );
@@ -91,8 +99,78 @@ const HomeScreen = () => {
     });
   }, []);
 
+
+  useEffect(() => {
+    
+  const guestCart = async () => {
+    // await AsyncStorage.removeItem('guestCustomerUniqueId');
+    // await AsyncStorage.removeItem('guestBearerToken');
+    // await AsyncStorage.removeItem('guestBasketIds');
+    setIsLoading(true);
+    const guestCustomerUniqueId = await AsyncStorage.getItem(
+      'guestCustomerUniqueId',
+    );
+    console.log('ddd', guestCustomerUniqueId);
+    // setId(guestCustomerUniqueId);
+
+    if (guestCustomerUniqueId) {
+      dispatch(
+        getGuestCustomerCartItems(
+          `${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`,
+        ),
+      )
+        .then(res => {
+          if (res?.payload?.status === 200 || res?.payload?.status === 201) {
+            console.log('guest carts api call successful', res?.payload?.data);
+            // const queryString = res?.payload?.data;
+            const guestBasketIds = res?.payload?.data?.baskets[0].basket_id;
+            console.log(guestBasketIds, 'this is the personal queryString');
+             AsyncStorage.setItem(
+              'guestBasketIds',
+              guestBasketIds,
+            );
+            // navigation.navigate('GuestCartScreen', { queryString });
+            // setIsLoadingAddToGuestCart(false);
+            setIsLoading(false);
+          }
+        })
+        .then(() => {
+          setIsLoading(false);
+          console.log('redux called successfully', guestCustomerUniqueId);
+        });
+        setIsLoading(false);
+    } else {
+      // const guestUserUniqueId = 'id' + Math.random().toString(16).slice(2);
+      const guestUserUniqueId = await api.postWithGuestEndpoint(
+        `${config.cartUrl}guestCreateCart`,
+      );
+      console.log('guestCreateCartssss', guestUserUniqueId.data.data.uniqueId);
+      const guestCustomerUniqueId = guestUserUniqueId.data.data.uniqueId;
+      console.log('guestCustomerUniqueIdg', guestCustomerUniqueId);
+      const guestBearerToken = guestUserUniqueId.data.data.bearerToken;
+      console.log('guestBearerToken', guestUserUniqueId.data.data.bearerToken);
+      await AsyncStorage.setItem(
+        'guestCustomerUniqueId',
+        guestCustomerUniqueId,
+      );
+      await AsyncStorage.setItem('guestBearerToken', guestBearerToken);
+      dispatch(
+        getGuestCustomerCartItems(
+          `${config.cartUrl}guestCustomerCart/${guestCustomerUniqueId}`,
+        ),
+      ).then(() => {
+        setIsLoading(false);
+      });
+      setIsLoading(false);
+      console.log('redux called ya successfully', guestCustomerUniqueId);
+    }
+  };
+  guestCart();
+})
+  
+
   const renderHomeItems = useCallback(
-    ({ item }: any) => {
+    ({item }) => {
       switch (item) {
         case 'ContentFullSection':
           return <ContentFullSection />;

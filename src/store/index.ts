@@ -24,11 +24,14 @@ import getCollectionsApiSlice from '../redux/collectionsApi/CollectionsApiSlice'
 import getProductsBySubCategoryApiSlice from '../redux/productsBySubCategory/SubCategoryProductsApiSlice';
 import getCustomerDetailsApiSlice from '../redux/profileApi/ProfileApiSlice';
 import getCustomerBasketApiSlice from '../redux/basket/BasketApiSlice';
+import getGuestCustomerBasketApiSlice from '../redux/guestBasket/guestBasketApiSlice'
 import createCustomerBasketSlice from '../redux/createBasketApi/CreateBasketApiSlice';
 import getCustomerCartItemsAliSlice from '../redux/cartItemsApi/CartItemsSlice';
 import getGuestCustomerCartItemsApiSlice from '../redux/GuestCartApi/GuestCartApiSlice'
 import getOrdersDataApiSlice from '../redux/ordersApi/OrdersApiSlice';
 import getShippmentMethodsApiSlice from '../redux/shippmentMethodApi/ShippmentMethodApiSlice';
+import getGuestShippmentMethodsApiSlice from '../redux/guestShipmentMethodApi/guestShipmentMethodApiSlice';
+import getGuestPaymentMethodsApiSlice from '../redux/guestPaymentMethodApi/guestPaymentMethodApiSlice';
 import getPaymentMethodsApiSlice from '../redux/paymentMethodApi/paymentMethodApiSlice';
 import searchProductsApiSlice from '../redux/searchApi/SearchApiSlice';
 import getOrdersDetailsApiSlice from '../redux/orderDetailsApi/OrderDetailsApiSlice';
@@ -40,6 +43,7 @@ const reducers = combineReducers({
   getCustomerCartItemsAliSlice,
   getGuestCustomerCartItemsApiSlice,
   getCustomerBasketApiSlice,
+  getGuestCustomerBasketApiSlice,
   getProductsByCategoryApiSlice,
   getProductDetailsApiSlice,
   getNewArrivalApiSlice,
@@ -48,6 +52,8 @@ const reducers = combineReducers({
   getProductsBySubCategoryApiSlice,
   getOrdersDataApiSlice,
   getShippmentMethodsApiSlice,
+  getGuestShippmentMethodsApiSlice,
+  getGuestPaymentMethodsApiSlice,
   getPaymentMethodsApiSlice,
   getOrdersDetailsApiSlice,
   [api.reducerPath]: api.reducer,

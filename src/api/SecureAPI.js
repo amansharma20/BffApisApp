@@ -87,37 +87,22 @@ const getWithEndpoint = async (endPoint, data, loading) => {
   }
 };
 
-
-
-// const [id, setId] = useState('') 
- 
-// const guestUserUniqueId = id;
-// console.log(guestUserUniqueId, 'id in secureAPi coming...');
-
-
-//  useEffect(() => {
-//    const guestCart = async () => {
-//      setIsLoading(true);
-//      const guestCustomerUniqueId = await AsyncStorage.getItem(
-//        'guestCustomerUniqueId',
-//      );
-//      setId(guestCustomerUniqueId);
-
-//      }
-//    guestCart();
-//  }, []);
-
 const getWithGuestEndpoint = async (endPoint, data, loading) => {
   console.log('endPoint: ', endPoint);
   const guestCustomerUniqueId = await AsyncStorage.getItem(
     'guestCustomerUniqueId',
   );
+
+  const guestBearerToken = await AsyncStorage.getItem(
+    'guestBearerToken'
+  );
+  console.log('guestBearerTokensss',guestBearerToken)
 console.log("guestCustomerUniqueIdss",guestCustomerUniqueId)
 
   try {
     let response = await axios.get(endPoint, {
       headers: {
-        token: guestCustomerUniqueId,
+        token: guestBearerToken,
       },
       validateStatus: () => true,
       withCredentials: true,
@@ -187,6 +172,11 @@ const post = async (endPoint, data, loading) => {
 const postWithEndpoint = async (endPoint, data, loading) => {
   console.log('endPoint: ', endPoint);
   let userToken = await Keychain.getGenericPassword();
+  
+  // const guestBearerToken = await AsyncStorage.getItem(
+  //   'guestBearerToken'
+  // );
+  // console.log('guestBearerTokensssff',guestBearerToken)
   let token = userToken.password;
   if (loading) {
     console.log('loading: ', loading);
@@ -228,6 +218,10 @@ const postWithGuestEndpoint = async (endPoint, data, loading) => {
   const guestCustomerUniqueId = await AsyncStorage.getItem(
     'guestCustomerUniqueId',
   );
+
+  const guestBearerToken = await AsyncStorage.getItem(
+    'guestBearerToken'
+  );
 console.log("guestCustomerUniqueIdss",guestCustomerUniqueId)
   
   if (loading) {
@@ -236,7 +230,7 @@ console.log("guestCustomerUniqueIdss",guestCustomerUniqueId)
   try {
     let response = await axios.post(endPoint, data, {
       headers: {
-        token: guestCustomerUniqueId,
+        token: guestBearerToken,
       },
       validateStatus: () => true,
       withCredentials: true,
