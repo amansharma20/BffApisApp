@@ -30,6 +30,7 @@ import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
 import ProductVariants from './components/ProductVariants';
 
 const ProductDetailsScreen = props => {
+  console.log("pros",props)
   const { isUserLoggedIn } = useIsUserLoggedIn();
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -130,6 +131,10 @@ const ProductDetailsScreen = props => {
   const [isLoading, setIsLoading] = useState(true);
   const imageCarousel = productDetails?.skus;
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
+  const [isLoadingAddToGuestCart, setIsLoadingAddToGuestCart] = useState(false);
+
+
+
 
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
@@ -270,6 +275,8 @@ const ProductDetailsScreen = props => {
               <CommonSolidButton
                 title={!isLoadingAddToCart ? 'Add to Cart' : 'Loading...'}
                 onPress={!isLoadingAddToCart ? onPressAddToCart : () => {}}
+                // onPress={!isLoadingAddToCart ? onPressAddToCart : onPressAddToGuestCart}
+
                 disabled={selectedSku === null ? true : false}
               />
             </Box>

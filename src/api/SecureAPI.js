@@ -212,7 +212,8 @@ const deleteWithEndpoint = async (endPoint, data, loading) => {
     console.log('loading: ', loading);
   }
   try {
-    let response = await axios.delete(endPoint,
+    let response = await axios.delete(
+       endPoint,
       {
         headers: {
           Accept: 'application/json',
@@ -225,7 +226,7 @@ const deleteWithEndpoint = async (endPoint, data, loading) => {
       },
     );
 
-    console.log('response: ', response);
+    console.log('responseddd: ', response);
 
     if (response.data !== undefined && response.data.status) {
       return {

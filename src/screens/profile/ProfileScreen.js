@@ -44,14 +44,12 @@ export default function ProfileScreen() {
   const userDetails = useSelector(
     state => state?.getCustomerDetailsApiSlice?.customerDetails?.data,
   );
-
+  console.log('userDetailsrrr: ', userDetails?.userProfile, customerId);
 
   useEffect(() => {
     setIsLoading(true);
     dispatch(
-      getCustomerDetails(`${config.cartUrl}userDetail/${customerId || storage.getString('customerId')}`),
-      // getCustomerDetails(`${config.cartUrl}userDetail`),
-
+      getCustomerDetails(`${config.cartUrl}userDetail/${customerId === "" ? "tarundrupal@yopmail.com" : customerId}`),
     ).then(() => {
       setIsLoading(false);
     });

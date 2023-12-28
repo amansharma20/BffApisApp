@@ -29,6 +29,7 @@ const OrderScreen = () => {
   );
 
   const renderItem = ({ item }) => {
+    console.log("item",item)
     return (
       <Box
         bg="white"

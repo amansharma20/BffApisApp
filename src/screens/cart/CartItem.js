@@ -18,19 +18,24 @@ const CartItem = ({ item }) => {
         ?.basket_id,
   );
 
+  console.log("basketId CartScreen", customerCartId)
+
   const removeItem = async itemId => {
+    console.log("balbalaanurag",item);
+    console.log("aaaaaaam",itemId);
     setIsLoading(true);
     const response = await api
-      .Delete(`${config.cartUrl}removeItem/${customerCartId}/items/${itemId}`)
+      .deleteWithEndpoint(`${config.cartUrl}deleteItemCart/${customerCartId}/items/${item.indexId}`)
+      console.log("api response",response.data)
       .then(res => {
-        if (res?.data?.status == 204) {
+        if (res?.data?.status === 200 || res?.data?.status === 204) {
           dispatch(
             getCustomerCartItems(
               `${config.cartUrl}cartDetail/${customerCartId}`,
             ),
           )
             .then(res => {
-              if (res.payload.status === 200) {
+              if (res.payload.status === 204 || res.payload.status === 200) {
                 setIsLoading(false);
               } else {
                 setIsLoading(false);
@@ -42,6 +47,7 @@ const CartItem = ({ item }) => {
             });
         }
       });
+    // console.log("handlingerror", await response);
   };
 
   return (
