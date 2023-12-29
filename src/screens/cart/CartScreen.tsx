@@ -21,6 +21,7 @@ import { storage } from '@/store';
 import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
 import { useAuthRoute } from '@/hooks/useAuthRoute';
 import config from '@/config';
+
 const CartScreen = () => {
   const navigation = useNavigation();
   const { getAuthRoute } = useAuthRoute();

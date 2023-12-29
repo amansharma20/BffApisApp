@@ -8,6 +8,7 @@ import ProductDetailsScreen from '@/screens/product/ProductDetailsScreen';
 import SignUpScreen from '@/screens/auth/SignUpScreen';
 import PersonalDetailsScreen from '@/screens/profile/PersonalDetailsScreen';
 import CartScreen from '@/screens/cart/CartScreen';
+import WishlistScreen from '@/screens/wishlist/WishlistScreen';
 import CollectionsScreen from '@/screens/collection/CollectionsScreen';
 import CheckoutScreen from '@/screens/checkout/CheckoutScreen';
 import OrderScreen from '@/screens/orders/OrdersScreen';
@@ -42,6 +43,7 @@ const HomeStackNavigator = () => {
         component={PersonalDetailsScreen}
       />
       <Stack.Screen name="CartScreen" component={CartScreen} />
+      <Stack.Screen name="WishlistScreen" component={WishlistScreen}/>
       <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
       <Stack.Screen name="OrdersScreen" component={OrderScreen} />
       <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} />

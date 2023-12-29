@@ -6,6 +6,8 @@ import Icons from '@/assets/constants/Icons';
 import { IS_IOS } from '@/utils/appUtils';
 import { useNavigation } from '@react-navigation/native';
 import CartIconComponent from '../cartIcon/CartIconComponent';
+import WishlistIconComponent from '../wishlistIcon/WishlistIconComponent';
+
 
 const CommonSearchHeader = () => {
   const navigation = useNavigation();
@@ -13,6 +15,9 @@ const CommonSearchHeader = () => {
   const onPressCart = () => {
     navigation.navigate('CartScreen');
   };
+
+  
+
 
   return (
     <Box paddingHorizontal="s16" backgroundColor="white">
@@ -46,12 +51,16 @@ const CommonSearchHeader = () => {
         </TouchableOpacity>
         <Box flexDirection="row">
           <TouchableOpacity>
-            <Box marginHorizontal="s16">
+            {/* <Box marginHorizontal="s16">
               <Image source={Icons.icon} style={styles.icon} />
-            </Box>
+            </Box> */}
+            {/* <Box marginHorizontal='s16'>
+            <Image source={Icons.wishlistIcon} style={styles.wishlistIcon} />
+            </Box> */}
           </TouchableOpacity>
           {/* <Image source={Icons.cartIcon} style={styles.icon} /> */}
           <CartIconComponent />
+          <WishlistIconComponent/>
         </Box>
       </Box>
     </Box>
@@ -72,4 +81,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginRight: 4,
   },
+  wishlistIcon:{
+    resizeMode: 'contain',
+    height: 22,
+    width: 22,
+  }
 });

@@ -8,29 +8,33 @@ import { useNavigation } from '@react-navigation/native';
 import Icons from '@/assets/constants/Icons';
 import { useAuthRoute } from '@/hooks/useAuthRoute';
 
-const CartIconComponent = () => {
+const WishlistIconComponent = () => {
   const navigation = useNavigation();
   const { getAuthRoute } = useAuthRoute();
-
-  const customerCartItems = useSelector(
-    state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
-  );
-  const totalCount = customerCartItems?.products?.reduce(
-    (total, currentValue, currentIndex) => {
-      const itemCount = currentValue?.quantity || 0;
-      return total + itemCount;
-    },
-    0,
-  );
-
-  const onPressCart = () => {
-    getAuthRoute('CartScreen', {});
-  };
   
+//   const customerCartItems = useSelector(
+//     state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
+//   );
+//   const totalCount = customerCartItems?.products?.reduce(
+//     (total, currentValue, currentIndex) => {
+//       const itemCount = currentValue?.quantity || 0;
+//       return total + itemCount;
+//     },
+//     0,
+//   );
+
+  // const onPressWishlist = () => {
+  //   getAuthRoute('WishListScreen', {});
+  // };
+
+  const onPressWishlist = () => {
+    navigation.navigate('WishlistScreen',{})
+  }
+
   return (
     <Box>
-      <TouchableOpacity style={{ padding: 6 }} onPress={onPressCart}>
-        {totalCount > 0 ? (
+      <TouchableOpacity style={{ padding: 6 }} onPress={onPressWishlist}>
+        {/* {totalCount > 0 ? (
           <Box
             style={{
               backgroundColor: '#F50157',
@@ -51,14 +55,14 @@ const CartIconComponent = () => {
           </Box>
         ) : (
           <></>
-        )}
-        <Image source={Icons.cartIcon} style={styles.cartIcon} />
+        )} */}
+        <Image source={Icons.wishlistIcon} style={styles.wishlistIcon} />
       </TouchableOpacity>
     </Box>
   );
 };
 
-export default CartIconComponent;
+export default WishlistIconComponent;
 
 const styles = StyleSheet.create({
   container: {
@@ -82,7 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: FONT.Primary,
   },
-  cartIcon: {
+  wishlistIcon: {
     resizeMode: 'contain',
     height: 22,
     width: 22,

@@ -70,6 +70,9 @@ const ProductItem = React.memo(({ item }) => {
       </TouchableOpacity>
       <Box position="absolute" alignSelf="flex-end">
         <TouchableOpacity style={{ padding: 6 }}>
+        {/* onPress={() => {
+          navigation.navigate('WishlistScreen');
+        }} */}
           <Image
             source={Icons.wishlistIcon}
             style={{

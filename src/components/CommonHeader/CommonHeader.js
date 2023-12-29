@@ -14,6 +14,7 @@ import { FONT } from '@/atoms';
 import { useSelector } from 'react-redux';
 import CartIconComponent from '../cartIcon/CartIconComponent';
 
+
 const CommonHeader = ({
   title,
   onPress,
@@ -35,6 +36,7 @@ const CommonHeader = ({
             <CartIconComponent />
           </>
         )}
+
       </SafeAreaView>
     </Box>
   );
