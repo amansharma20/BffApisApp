@@ -49,6 +49,16 @@ const CommonSearchHeader = () => {
             <Box marginHorizontal="s16">
               <Image source={Icons.icon} style={styles.icon} />
             </Box>
+            <Box marginHorizontal="s16">
+            <Image
+            source={Icons.wishlistIcon}
+            style={{
+              width: 24,
+              height: 24,
+              tintColor: 'white',
+            }}
+          />
+            </Box>
           </TouchableOpacity>
           {/* <Image source={Icons.cartIcon} style={styles.icon} /> */}
           <CartIconComponent />
@@ -71,5 +81,11 @@ const styles = StyleSheet.create({
     height: 22,
     resizeMode: 'contain',
     marginRight: 4,
+  },
+  
+  wishlistIcon: {
+    resizeMode: 'contain',
+    height: 22,
+    width: 22,
   },
 });
