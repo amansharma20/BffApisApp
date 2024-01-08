@@ -3,11 +3,48 @@ import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Icons from '@/assets/constants/Icons';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, Text } from '@/atoms';
+import { api } from '@/api/SecureAPI';
 import config from '@/config';
+import { customerId } from '@/utils/appUtils';
+import { storage } from '@/store';
+import {getCustomerWishlist} from '@/redux/wishlistApi/WishlistApiAsyncThunk'
+
+
 
 const ProductItem = React.memo(({ item }) => {
+  console.log(item,"this is mera item")
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const onPressAddToShoppingList = async (productId) => {
+    const reqBody = {
+        customerId:`${storage.getString('customerId')}`,
+        productId:productId,
+        type:"product"
+    
+    }
+    console.log("reqBody of wishlist",reqBody)
+    const response = await api.postWithEndpoint(
+      `${config.cartUrl}wishlistAddItem/943c76423cd374f626d7b1cad9`,
+      reqBody,
+    );
+
+    console.log("response of wishlist",response?.data?.status)
+
+    if (response?.data?.status === 201 || response?.data?.status == 200) {
+      dispatch(getCustomerWishlist(`${config.cartUrl}customerWishlist?customerId=${storage.getString('customerId')}`));
+    
+    }
+    else {
+     console.log("errordd")
+    }
+  }
+// });
+
+
+
   return (
     <Box
       marginHorizontal="s4"
@@ -68,8 +105,8 @@ const ProductItem = React.memo(({ item }) => {
           </Box>
         </Box>
       </TouchableOpacity>
-      <Box position="absolute" alignSelf="flex-end">
-        <TouchableOpacity style={{ padding: 6 }}>
+      <Box position="absolute" alignSelf="flex-end" >
+        <TouchableOpacity style={{ padding: 6 }} onPress={()=>onPressAddToShoppingList(item?.productId)} >
         {/* onPress={() => {
           navigation.navigate('WishlistScreen');
         }} */}
@@ -86,6 +123,7 @@ const ProductItem = React.memo(({ item }) => {
     </Box>
   );
 });
+
 
 export default ProductItem;
 

@@ -89,6 +89,7 @@ const CartScreen = () => {
                       data={customerCartItems?.products}
                       renderItem={item => {
                         const data = item?.item;
+                        console.log(data,"dataaaaa")
                         return <CartItem item={data} />;
                       }}
                       ListEmptyComponent={

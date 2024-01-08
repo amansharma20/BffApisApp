@@ -14,6 +14,14 @@ import { getCustomerBasketApi } from '@/redux/basket/BasketApiAsyncThunk';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import { reduxStorage, storage } from '@/store';
+import { getWishlistById } from '@/redux/wishlistApi/WishlistByIdApiAsyncThunk';
+import { api } from '@/api/SecureAPI';
+import { useSelector, useDispatch } from 'react-redux';
+import { getCustomerWishlist } from '@/redux/wishlistApi/WishlistApiAsyncThunk';
+
+
+
+
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
@@ -45,6 +53,52 @@ const HomeScreen = () => {
   }, []);
 
   console.log('customerId: ', customerId);
+
+  
+  const wishlistAllItems = useSelector(
+    state => state?.getCustomerWishlistApiSlice?.customerWishlist?.data,
+  );
+  console.log(wishlistAllItems, 'wishlistItemsfffddd');
+
+  
+  useEffect(() => {
+    dispatch(
+      getCustomerWishlist(
+        `${config.cartUrl}customerWishlist?customerId=${storage.getString(
+          'customerId',
+        )}`,
+      ),
+    );
+  }, []);
+
+
+
+// useEffect(()=>{
+//   // const onPressAddToShoppingList = async () => {
+    
+//     const reqBody = {
+//       customerId:`${storage.getString('customerId')}`,
+//       name:"demotestsss",
+//       type:"wish_list"
+  
+//   }
+//   console.log("reqBody of wishlist",reqBody)
+//   const response =  api.postWithEndpoint(
+//     `${config.cartUrl}createWishlist`,
+//     reqBody,
+//   );
+//   console.log("response of wishlist",response?.data?.status)
+// // }
+// })
+  // if (response?.data?.status === 201 || response?.data?.status == 200) {
+  //   dispatch(getWishlistById(`${config.cartUrl}wishlistById/943c76423cd374f626d7b1cad9?customerId=${storage.getString(
+  //     'customerId',
+  //   )}`));
+  
+  // }
+  // else {
+  //  console.log("errordd")
+  // }
 
   useEffect(() => {
     if (customerId) {

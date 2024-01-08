@@ -13,14 +13,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import CommonHeader from '@/components/CommonHeader/CommonHeader';
 import { useNavigation } from '@react-navigation/native';
 import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
-// import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
-// import CartItem from './CartItem';
+import { getCustomerWishlist } from '@/redux/wishlistApi/WishlistApiAsyncThunk';
+import { getWishlistById } from '@/redux/wishlistApi/WishlistByIdApiAsyncThunk';
+import WishlistItem from './WishlistItem';
 import CommonSolidButton from '@/components/CommonSolidButton/CommonSolidButton';
 import { customerId } from '@/utils/appUtils';
 import { storage } from '@/store';
-// import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
+import CartScreenShimmer from '@/components/shimmers/CartScreenShimmer';
 import { useAuthRoute } from '@/hooks/useAuthRoute';
 import config from '@/config';
+import { api } from '@/api/SecureAPI';
 
 const WishlistScreen = () => {
   const navigation = useNavigation();
@@ -40,9 +42,67 @@ const WishlistScreen = () => {
   // const customerCartItems = useSelector(
   //   state => state?.getCustomerCartItemsAliSlice?.customerCartItems?.data,
   // );
-//   const renderItem = () => {
-//     20;
-//   };
+
+  const wishlistAllItems = useSelector(
+    state => state?.getCustomerWishlistApiSlice?.customerWishlist?.data,
+  );
+  console.log(wishlistAllItems, 'wishlistItemsfff');
+
+  const wishlistByIdItems = useSelector(
+    state => state?.getWishlistByIdApiSlice?.WishlistById?.data,
+  );
+  console.log('wishlistByIdItems', wishlistByIdItems);
+
+  const renderItem = () => {
+    20;
+  };
+
+  useEffect(() => {
+    dispatch(
+      getCustomerWishlist(
+        `${config.cartUrl}customerWishlist?customerId=${storage.getString(
+          'customerId',
+        )}`,
+      ),
+    );
+  }, []);
+
+  useEffect(() => {
+    dispatch(
+      getWishlistById(
+        `${
+          config.cartUrl
+        }wishlistById/943c76423cd374f626d7b1cad9?customerId=${storage.getString(
+          'customerId',
+        )}`,
+      ),
+    );
+  }, []);
+
+  const addNewWishlist = async () => {
+    const respBody = {
+      customerId: `${storage.getString('customerId')}`,
+      productId: productId,
+      type: 'product',
+    };
+    console.log('respBody', respBody);
+    const response = await api.post(
+      `${config.cartUrl}wishlistAddItem/943c76423cd374f626d7b1cad9`,
+      respBody,
+    );
+    console.log('responser', response);
+    if (response?.data?.status === 201 || response?.data?.status == 200) {
+      dispatch(
+        getCustomerWishlist(
+          `${config.cartUrl}customerWishlist?customerId=${storage.getString(
+            'customerId',
+          )}`,
+        ),
+      );
+    } else {
+      alert('error');
+    }
+  };
 
   // useEffect(() => {
   //   dispatch(
@@ -71,39 +131,33 @@ const WishlistScreen = () => {
       <Box flex={1} backgroundColor="white">
         {isUserLoggedIn ? (
           <>
-            <CommonHeader title={'Your Wishlist'} />
-            {isLoading ? (
-              <>
-                {/* <CartScreenShimmer /> */}
-              </>
-            ) : (
-              <>
-                <ScrollView
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingHorizontal: theme.spacing.paddingHorizontal,
+            <CommonHeader title={'Your Wishlistff'} />
+
+            <ScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+                paddingHorizontal: theme.spacing.paddingHorizontal,
+              }}
+            >
+              <Box>
+                <FlatList
+                  data={wishlistByIdItems?.wishlistItems}
+                  renderItem={item => {
+                    const productData = item?.item;
+                    console.log(productData, 'productData');
+                    return <WishlistItem item={productData} />;
                   }}
-                >
-                  <Box>
-                    <FlatList
-                    //   data={customerCartItems?.products}
-                      renderItem={item => {
-                        const data = item?.item;
-                        return <CartItem item={data} />;
-                      }}
-                      ListEmptyComponent={
-                        isLoading === false ? (
-                          <ListEmptyComponent />
-                        ) : (
-                          <ActivityIndicator />
-                        )
-                      }
-                      scrollEnabled={false}
-                    />
-                  </Box>
-                </ScrollView>
-              </>
-            )}
+                  ListEmptyComponent={
+                    isLoading === false ? (
+                      <ListEmptyComponent />
+                    ) : (
+                      <ActivityIndicator />
+                    )
+                  }
+                  scrollEnabled={false}
+                />
+              </Box>
+            </ScrollView>
           </>
         ) : (
           <>
@@ -120,18 +174,8 @@ const WishlistScreen = () => {
           backgroundColor="white"
         >
           <CommonSolidButton
-            title="Proceed to Checkout"
-            disabled={
-                isLoading
-            //   isLoading || customerCartItems?.products?.length <= 0
-                ? true
-                : false
-            }
-            onPress={() =>
-              getAuthRoute('CheckoutScreen', {
-                // basketId: customerCartId,
-              })
-            }
+            title="Add new Shopping list"
+            onPress={() => addNewWishlist()}
           />
         </Box>
       </>

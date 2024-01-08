@@ -12,7 +12,7 @@ const HomePlp = ({
   listTitle,
 }) => {
   const renderItem = ({ item, index }) => {
-    return <ProductItem item={item} key={index} />;
+    return <ProductItem item={item} key={index} />; 
   };
 
   return (
