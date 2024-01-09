@@ -6,7 +6,7 @@ export const CarouselCrossSellingProducts = ({ item, index }) => {
   return (
     <Box style={styles.container} key={index}>
       <Image source={{ uri: item.image }} style={styles.image} />
-      <Text>hello shubham</Text>
+      <Text>hello Aamir</Text>
     </Box>
   );
 };

@@ -2,10 +2,15 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+// import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useContext, useRef, useMemo, useCallback } from 'react';
+import BottomSheet,{BottomSheetTextInput} from '@gorhom/bottom-sheet';
+import {RemoveIcon} from '../../assets/svgs';
+import Modal from '../../components/modal/modal'
 import {
   StyleSheet,
   TouchableOpacity,
+  FlatList,
   ScrollView,
   SafeAreaView,
   Alert,
@@ -25,9 +30,14 @@ import { useIsUserLoggedIn } from '@/hooks/useIsUserLoggedIn';
 import axios from 'axios';
 import { getCustomerCartItems } from '@/redux/cartItemsApi/CartItemsAsyncThunk';
 import { storage } from '@/store';
+import { customerId } from '@/utils/appUtils';
 import config, { ENV } from '@/config';
 import ProductDetailsShimmer from '@/components/shimmers/ProductDetailsShimmer';
 import ProductVariants from './components/ProductVariants';
+import { getCustomerWishlist } from '@/redux/wishlistApi/WishlistApiAsyncThunk';
+import { api } from '@/api/SecureAPI';
+
+
 
 const ProductDetailsScreen = props => {
   const { isUserLoggedIn } = useIsUserLoggedIn();
@@ -130,6 +140,66 @@ const ProductDetailsScreen = props => {
   const [isLoading, setIsLoading] = useState(true);
   const imageCarousel = productDetails?.skus;
   const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
+  const [newWishlistName, setNewWishlistName] = useState('');
+
+
+  
+  const wishlistAllItems = useSelector(
+    state => state?.getCustomerWishlistApiSlice?.customerWishlist?.data,
+  );
+  console.log(wishlistAllItems, 'wishlistItemspddddppp');
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['3%','25%', '50%', '75%', '95%'], []);
+
+  
+  useEffect(() => {
+    dispatch(
+      getCustomerWishlist(
+        `${config.cartUrl}customerWishlist?customerId=${storage.getString(
+          'customerId',
+        )}`,
+      ),
+    );
+  }, []);
+
+  const handleWishlistItemPdpClick = async (wishlistItem) => {
+    console.log("Clicked wishlist item pdp: ", wishlistItem.id);
+    // setLoading(true);
+    const reqBody = {
+        customerId:`${customerId || storage.getString('customerId')}`,
+        productId:productId,
+        type:"product"
+    };
+
+    console.log(reqBody, 'reqbobdy');
+
+    const res = await api.postWithEndpoint(
+      `${config.cartUrl}wishlistAddItem/${wishlistItem.id}`,
+      reqBody,
+    )
+    .then(response => {
+      console.log("Response of getWishlistById:", response?.payload?.data);
+      // Handle the response here
+    })
+    .catch(error => {
+      console.error("Error fetching wishlist by ID:", error);
+      // Handle errors here
+    });
+  };
+
+  const removeItem = async productData => {
+    console.log(productData,"jajaaj")
+    setIsLoading(true);
+    const response = await api
+      .deleteWithEndpoint(`${config.cartUrl}deleteCustomerWishlist/${productData}?customerId=${storage.getString(
+        'customerId',
+      )}`)
+  };
+
+
 
   const onPressAddToCart = () => {
     setIsLoadingAddToCart(true);
@@ -253,6 +323,9 @@ const ProductDetailsScreen = props => {
                             selectedVariants={selectedVariants}
                             setSelectedVariants={setSelectedVariants}
                           />
+                <Box>
+                <Modal/>
+              </Box>
                         </Box>
                       )}
                     </Box>
@@ -260,7 +333,7 @@ const ProductDetailsScreen = props => {
                 </Box>
               ) : (
                 <Text>Product is not available</Text>
-              )}
+                )}
             </ScrollView>
             <Box
               padding="s16"
@@ -273,6 +346,50 @@ const ProductDetailsScreen = props => {
                 disabled={selectedSku === null ? true : false}
               />
             </Box>
+              <BottomSheet
+        snapPoints={snapPoints}
+        index={1}
+      >
+      <BottomSheetTextInput
+      style={styles.input}
+      value={newWishlistName}
+      onChangeText={text => setNewWishlistName(text)}
+      placeholder="Enter wishlist name" />
+      <FlatList
+                  data={wishlistAllItems?.wishlist}
+                  renderItem={item => {
+                      const productData = item?.item;
+                    console.log(productData, 'productDatawishlist');
+                    // return <WishlistItem item={productData} />;
+
+                    return (
+                      <View style={styles.listItemContainer}>
+                       <View style={styles.roundButton}>
+            {/* Your button design goes here */}
+                      </View>
+                          <ScrollView>
+          <Text key={productData.id} textAlign="center" onPress={() => handleWishlistItemPdpClick(productData)}>
+            {productData.name}
+          </Text>
+                </ScrollView>
+                <TouchableOpacity style={styles.removeButton}  onPress={() => removeItem(productData.id)}>
+                  <RemoveIcon />
+                </TouchableOpacity>
+       
+      </View> )
+ }}
+                />
+      {/* <Box
+          padding="s16"
+          style={theme.cardVariants.bottomButtonShadow}
+          backgroundColor="white"
+        >
+          <CommonSolidButton
+            title="Add new Shopping list"
+            onPress={() => addNewWishlist()}
+          />
+        </Box> */}
+      </BottomSheet>
           </>
         )}
       </SafeAreaView>
@@ -329,6 +446,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     color: 'white',
+  },
+  listItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'lightgray',
+  },
+  roundButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'darkgray', // Change this to your desired button color
+    marginRight: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeButton: {
+    // Styling for the RemoveIcon button
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  input: {
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius: 10,
+    fontSize: 16,
+    lineHeight: 20,
+    padding: 8,
+    backgroundColor: 'rgba(151, 151, 151, 0.25)',
   },
 });
 
